@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-08-23T00:07:36.310177+00:00",
+  "timestamp": "2026-10-13T00:17:15.718719+00:00",
   "repo": "oauth-wg/oauth-spiffe-client-authentication",
   "labels": [
     {
@@ -649,6 +649,22 @@
       "body": "# JWT-SVID example\n\n- The value of `client_id` is not properly URL-encoded.\n- The value of `client_id` should not be a SPIFFE ID, as this could lead to confusion.\n- The value of `client_assertion_type` is incorrect. The equals sign (`=`) before `jwt-spiffe` should be replaced with `%3A`.\n\n# JWT-SVID example with Client ID Metadata Document\n\n- The value of `client_assertion_type` is incorrect. The equals sign (`=`) before `jwt-spiffe` should be replaced with `%3A`.\n\n# X509-SVID Example\n\n- The value of `client_id` is not properly URL-encoded.\n- The value of `client_id` should not be a SPIFFE ID, as this could lead to confusion.\n\n\n",
       "createdAt": "2026-08-20T23:38:43Z",
       "updatedAt": "2026-08-20T23:38:43Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 52,
+      "id": "I_kwDOOml42M8AAAABWtukcg",
+      "title": "Should X.509 validation include all the leaf checks from the SPIFFE X.509 specification?",
+      "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52",
+      "state": "OPEN",
+      "author": "josephdecock",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Section 5.2 of [X.509-SVID](https://github.com/spiffe/spiffe/blob/main/standards/X509-SVID.md#52-leaf-validation) defines the requirements for validation of leaf SVIDs. Some of those requirements are present in section 3.2 of this draft, but not all. In particular, this draft doesn't mention that validators MUST check that `keyCertSign` and `cRLSign` are not set in the key usage extension, and that the SPIFFE ID has a non-root path component. Should the language here be updated to include those checks? If so, I'm happy to raise a PR.\n\nFor reference, here's what X.509-SVID says:\n\n> When validating an X.509 SVID for authentication purposes, the validator MUST ensure that the `cA` field in the basic constraints extension is set to `false`, and that `keyCertSign` and `cRLSign` are not set in the key usage extension. The validator MUST also ensure that the scheme of the SPIFFE ID is set to `spiffe`, and MUST ensure that the SPIFFE ID has a non-root path component. SVIDs containing more than one URI SAN MUST be rejected.\n\n",
+      "createdAt": "2026-10-12T19:28:40Z",
+      "updatedAt": "2026-10-12T19:28:40Z",
       "closedAt": null,
       "comments": []
     }
