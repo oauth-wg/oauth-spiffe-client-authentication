@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-13T00:17:15.718719+00:00",
+  "timestamp": "2026-10-15T00:13:46.325468+00:00",
   "repo": "oauth-wg/oauth-spiffe-client-authentication",
   "labels": [
     {
@@ -151,15 +151,15 @@
       "labels": [],
       "body": "The company that I work for is implementing a workload identity pattern (inspired heavily by WIMSE WG) for securing service to service communication. One of the biggest benefits that we are leveraging is using Istio mTLS certificates (which are roughly SPIFFE-compatible) to get Certificate-Bound Access Tokens. This is something you get for \"free\" when implementing RFC 8705.\n\nIMO this specification should be more explicit about the ability to get certificate-bound tokens, because in effect these tokens are actually **workload-bound** (via SPIFFE ID) which is a huge security benefit. \n\nThe only modification we'd had to make for RFC 8705 is the following:\n\n1) We add a new cnf claim:\n```\n  \"cnf\":{\n    \"x5t#S256\": \"87abe78e185a0c5ee193bf1e34b36bbf43f47178850871b30225e23542b7d503\",\n    \"x5s#SPIFFE\": \"spiffe://cluster.local/ns/namespace/sa/default\"\n  }\n```\nThe `x5s#SPIFFE` is intended to reference to SPIFFE ID, the reason for that is because istio rotates mTLS certificates very quickly so we didn't want to rely on only the `x5t#S256` claim to validate the binding.\n\n2) RFC 8705 expects that the leaf cert itself or thumbprint is saved (or available at least) to the AS so that it can verify it.\nFor the same reason as above (rapid rotation) we don't do this. We only store the SPIFFE ID, then we use the root public CA (which Istio publishes) to verify the cert chain itself.\n\nThen following that, any of our APIs that gets these tokens will pretty much validate the certificate-binding per RFC 8705.",
       "createdAt": "2025-07-24T07:08:45Z",
-      "updatedAt": "2026-01-14T15:30:26Z",
+      "updatedAt": "2026-10-14T08:02:30Z",
       "closedAt": null,
       "comments": [
         {
           "author": "arndt-s",
           "authorAssociation": "MEMBER",
-          "body": "Hi @dagdagdag83 \n\nsorry for just getting back to you know. We've had a look at the issue and believe it's out of scope for now.\n\nWhile it seems simple at first, it comes with a lot of security considerations:\n- Binding to an identifier instead of a key has caveats and heavily depends on the granularity of the identifier (is it an instance, is it a logical unit, what if the identifier is shared?)\n- Resource servers need to change their logic to accept \"identifier-bound\" access tokens.\n\nHowever, we acknowledge that we need to talk more about some of the scenarios you mention:\n- When SVID key rotates, should the workload request a new AT from the AS?\n- What about general keybinding? Should easily be possible for X.509-SVIDs.",
+          "body": "Hi @dagdagdag83 \n\nsorry for just getting back to you now. We've had a look at the issue and believe it's out of scope for now.\n\nWhile it seems simple at first, it comes with a lot of security considerations:\n- Binding to an identifier instead of a key has caveats and heavily depends on the granularity of the identifier (is it an instance, is it a logical unit, what if the identifier is shared?)\n- Resource servers need to change their logic to accept \"identifier-bound\" access tokens.\n\nHowever, we acknowledge that we need to talk more about some of the scenarios you mention:\n- When SVID key rotates, should the workload request a new AT from the AS?\n- What about general keybinding? Should easily be possible for X.509-SVIDs.",
           "createdAt": "2026-01-14T15:30:15Z",
-          "updatedAt": "2026-01-14T15:30:15Z"
+          "updatedAt": "2026-10-14T08:02:30Z"
         }
       ]
     },
@@ -665,6 +665,40 @@
       "body": "Section 5.2 of [X.509-SVID](https://github.com/spiffe/spiffe/blob/main/standards/X509-SVID.md#52-leaf-validation) defines the requirements for validation of leaf SVIDs. Some of those requirements are present in section 3.2 of this draft, but not all. In particular, this draft doesn't mention that validators MUST check that `keyCertSign` and `cRLSign` are not set in the key usage extension, and that the SPIFFE ID has a non-root path component. Should the language here be updated to include those checks? If so, I'm happy to raise a PR.\n\nFor reference, here's what X.509-SVID says:\n\n> When validating an X.509 SVID for authentication purposes, the validator MUST ensure that the `cA` field in the basic constraints extension is set to `false`, and that `keyCertSign` and `cRLSign` are not set in the key usage extension. The validator MUST also ensure that the scheme of the SPIFFE ID is set to `spiffe`, and MUST ensure that the SPIFFE ID has a non-root path component. SVIDs containing more than one URI SAN MUST be rejected.\n\n",
       "createdAt": "2026-10-12T19:28:40Z",
       "updatedAt": "2026-10-12T19:28:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 53,
+      "id": "I_kwDOOml42M8AAAABW4mCFw",
+      "title": "JWT-SVID examples has wrong parameters for client_assertion_type",
+      "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/53",
+      "state": "CLOSED",
+      "author": "stianst",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [
+        "stianst"
+      ],
+      "labels": [],
+      "body": "3.1.1.  JWT-SVID example and 3.1.2.  JWT-SVID example with Client ID Metadata Document has wrong parameters for client assertion type:\n\n```\nclient_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3A\nclient-assertion-type=jwt-spiffe&\n```\n\nThis should be:\n```\nclient_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-spiffe\n```",
+      "createdAt": "2026-10-13T12:56:18Z",
+      "updatedAt": "2026-10-14T07:48:45Z",
+      "closedAt": "2026-10-14T07:48:45Z",
+      "comments": []
+    },
+    {
+      "number": 55,
+      "id": "I_kwDOOml42M8AAAABXFq5pw",
+      "title": "Security considerations for trust at first use when using CIMD and spiffe_bundle_endpoint",
+      "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55",
+      "state": "OPEN",
+      "author": "arndt-s",
+      "authorAssociation": "MEMBER",
+      "assignees": [],
+      "labels": [],
+      "body": "Suggested by @stianst ",
+      "createdAt": "2026-10-14T08:20:22Z",
+      "updatedAt": "2026-10-14T08:20:22Z",
       "closedAt": null,
       "comments": []
     }
@@ -2759,6 +2793,61 @@
               "updatedAt": "2026-08-21T09:47:16Z"
             }
           ]
+        }
+      ]
+    },
+    {
+      "number": 54,
+      "id": "PR_kwDOOml42M8AAAABILs_NQ",
+      "title": "Fix client_assert_type in JWT-SVID examples",
+      "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/pull/54",
+      "state": "MERGED",
+      "author": "stianst",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Closes #53",
+      "createdAt": "2026-10-13T13:39:08Z",
+      "updatedAt": "2026-10-14T07:48:44Z",
+      "baseRepository": "oauth-wg/oauth-spiffe-client-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "07d2f1f2c93b1c0a2111ec0a4e19764c9d62d8cc",
+      "headRepository": "stianst/oauth-spiffe-client-authentication",
+      "headRefName": "fix-jwt-svid-examples",
+      "headRefOid": "84268f4076c10bf0eada27890b46101d8d16d3a1",
+      "closedAt": "2026-10-14T07:48:44Z",
+      "mergedAt": "2026-10-14T07:48:44Z",
+      "mergedBy": "arndt-s",
+      "mergeCommit": {
+        "oid": "d7db7c678d72788d168d05501f79b0624fba4ee1"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOml42M8AAAABSBbYZg",
+          "commit": {
+            "abbreviatedOid": "84268f4"
+          },
+          "author": "copilot-pull-request-reviewer",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "<!-- ccr-overview-v2 -->\n\n### \ud83d\udfe2 Approval recommended\n\nBoth examples now use the correct URL-encoded assertion type consistently with the specification.\n\n**0 open findings**\n\n<details>\n<summary><strong>What changed in this PR</strong></summary>\n\nCorrects the JWT-SVID token request examples to match the assertion type defined by the specification and resolve #53.\n\n**Changes:**\n- Fixes the encoded `client_assertion_type` in both JWT-SVID examples.\n- Prevents the assertion type from being parsed as two form parameters.\n\n| File | Description |\r\n| ---- | ----------- |\r\n| `draft-ietf-oauth-spiffe-client-auth.md` | Corrects both JWT-SVID request examples. |\n</details>\n\n\ud83e\udde0 **Review effort:** Balanced\n\n---\n\n\ud83d\udca1 <a href=\"/oauth-wg/oauth-spiffe-client-authentication/new/main?filename=.github/skills/code-review/SKILL.md\" class=\"Link--inTextBlock\" target=\"_blank\" rel=\"noopener noreferrer\">Add a `code-review` agent skill</a> or configure MCP servers for context-aware, tailored reviews. <a href=\"https://docs.github.com/copilot/how-tos/use-copilot-agents/request-a-code-review/use-code-review?tool=webui#mcp-servers-and-agent-skills\" class=\"Link--inTextBlock\" target=\"_blank\" rel=\"noopener noreferrer\">Learn more in the docs.</a>",
+          "createdAt": "2026-10-13T13:40:21Z",
+          "updatedAt": "2026-10-13T13:40:21Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOOml42M8AAAABSLNWcA",
+          "commit": {
+            "abbreviatedOid": "84268f4"
+          },
+          "author": "arndt-s",
+          "authorAssociation": "MEMBER",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2026-10-14T07:48:37Z",
+          "updatedAt": "2026-10-14T07:48:37Z",
+          "comments": []
         }
       ]
     }
