@@ -136,7 +136,7 @@ This section describes how SPIFFE identity documents can be used for OAuth 2.0 c
 
 OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X.509-SVID) to prove its identity.
 
-## Client Authentication with JWT-SVIDs
+## Client Authentication with JWT-SVIDs {#jwt-svid}
 
 JWT-SVID based authentication naturally follows the JWT Profile for OAuth 2.0 Client Authentication {{RFC7523}}, with specific adaptations for SPIFFE JWT-SVIDs. {{RFC7521}} remains valid.
 
