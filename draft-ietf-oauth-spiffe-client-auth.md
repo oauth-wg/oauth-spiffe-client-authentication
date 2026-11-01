@@ -325,6 +325,8 @@ A WIT-SVID is a WIMSE Workload Identity Token (WIT) as defined in {{?I-D.draft-i
 
 A WIT-SVID as issued by a SPIFFE implementation binds a key pair held by the client via the `cnf` claim. The key pair bound to the WIT-SVID is used to generate an attestation proof during client authentication. The attestation proof is in the form of a "Client Attestation PoP JWT" as defined in {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} that is issued by the client and signed with the private part of the key pair bound in the WIT-SVID.
 
+The WIT-SVID and the corresponding Client Attestation PoP JWT are sent together to the authorization server as a means of client authentication using the HTTP header-based syntax defined in Section 5.1 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+
 The request MAY include the `client_id` parameter. If present, the SPIFFE ID carried in the `sub` claim of the WIT-SVID MUST be authorized to authenticate as the client identified by the `client_id`, as described below.
 
 ### Authorization Server Validation {#wit-svid-validation}
@@ -336,6 +338,7 @@ To validate a WIT-SVID client authentication request, the authorization server M
 * The authorization server MUST accept `wit+jwt` as a valid value of the `typ` JWT header parameter in the `OAuth-Client-Attestation` header, in addition to `oauth-client-attestation+jwt`.
 * The WIT-SVID MUST be validated as a Workload Identity Token according to Section 5.1.3 of {{?I-D.draft-ietf-wimse-workload-creds}}.
 * The WIT-SVID signature MUST be verified using the signing keys of the trust domain according to {{spiffe-bundle-validation}}.
+* The Client Attestation PoP JWT MUST be validated according to Section 7.2 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
 * If the request contains a `client_id` parameter, the SPIFFE ID in the `sub` claim MUST be associated with the client it identifies, as described in {{client-registration-metadata}} or through the client's registration with the authorization server. This replaces the `client_id` to `sub` matching rule of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}. If `client_id` is absent, the SPIFFE ID in the `sub` claim identifies the client.
 
 > TODO: What to do with `attest_jwt_client_auth` method in AS metadata?
