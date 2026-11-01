@@ -89,6 +89,15 @@ normative:
     target: https://github.com/spiffe/spiffe/blob/main/standards/SPIFFE_Federation.md
 
 informative:
+  OpenID.RP-Metadata-Choices:
+    title: OpenID Connect Relying Party Metadata Choices 1.0
+    author:
+      - name: M.B. Jones
+      - name: R. Hedberg
+      - name: J. Bradley
+      - name: F. Skokan
+    date: 2026-03-25
+    target: https://openid.net/specs/openid-connect-rp-metadata-choices-1_0-final.html
 
 --- abstract
 
@@ -393,7 +402,7 @@ code=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&
 client_id=spiffe://example.org/my-oauth-client
 ~~~
 
-# Interoperability
+# Interoperability {#interoperability}
 
 In order to achieve interoperability between the authorization server and clients the authorization server MUST advertise what client authentication methods are supported.
 
@@ -420,6 +429,8 @@ spiffe_bundle_endpoint
 : OPTIONAL. The URL of the SPIFFE Bundle Endpoint for the client's trust domain, which the authorization server can use to retrieve the signing keys for validating the client's SVIDs. If not provided, the authorization server MUST obtain the signing keys for the client's trust domain through some other established mechanism, such as a pre-configured SPIFFE bundle.
 
 If the `spiffe_id` value uses a wildcard, it MUST end with the two-character sequence "`/*`". In this case, the authorization server MUST perform a path-segment prefix match: the SPIFFE ID of the presented SVID MUST begin with the `spiffe_id` value excluding the trailing "`*`" (i.e., up to and including the final "`/`"), and this prefix MUST correspond to complete path segment(s) of the SPIFFE ID (for example, `spiffe://example.org/client/*` matches `spiffe://example.org/client/123` but does not match `spiffe://example.org/client123`). Otherwise, the SPIFFE ID of the presented SVID MUST be an exact match of the `spiffe_id` value.
+
+A client indicates the SPIFFE-based client authentication methods it supports in its client metadata, whether registered using Dynamic Client Registration {{RFC7591}} or published in a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}}, using the values defined in {{interoperability}}. A client that supports more than one method lists them in the `token_endpoint_auth_methods_supported` parameter defined in Section 2 of {{OpenID.RP-Metadata-Choices}}. A client SHOULD also include the `token_endpoint_auth_method` parameter {{RFC7591}} with its preferred method, so that authorization servers that do not support `token_endpoint_auth_methods_supported` do not apply the {{RFC7591}} default of `client_secret_basic`.
 
 # SPIFFE Key Distribution and Validation {#spiffe-bundle-validation}
 
@@ -642,6 +653,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Describe how clients indicate one or more SPIFFE client authentication method (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/49)
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
