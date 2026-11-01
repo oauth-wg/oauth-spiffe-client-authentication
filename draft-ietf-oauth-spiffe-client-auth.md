@@ -646,7 +646,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
-* * Clarify that the authorization server may present a WebPKI certificate 
+* * Clarify that the authorization server may present a WebPKI certificate
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
