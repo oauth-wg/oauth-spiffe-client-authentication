@@ -438,6 +438,8 @@ The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs, JWT-SVIDs an
 
 Server authentication on this endpoint is available in two flavors. For the sake of interoperability, in the context of this specification the WebPKI flavor MUST be used. This effectively means that the server certificate of the bundle endpoint is trusted by the authorization server accessing it. See Sec 5.2.1 of {{SPIFFE_FEDERATION}} for details.
 
+SPIFFE Federation {{SPIFFE_FEDERATION}} defines two endpoint profiles for authenticating a bundle endpoint. For interoperability, the authorization server MUST use the `https_web` profile (Section 5.2.1 of {{SPIFFE_FEDERATION}}). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. The `https_spiffe` profile (Section 5.2.2 of {{SPIFFE_FEDERATION}}), in which the endpoint presents an X.509-SVID, requires the authorization server to be configured in advance with the SPIFFE ID of the bundle endpoint and a means of obtaining the bundle for the endpoint's trust domain, such as an operator-supplied initial bundle. This specification does not use the `https_spiffe` profile.
+
 The authorization server SHOULD periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See {{SPIFFE_FEDERATION}} for details.
 
 The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and MUST be configured manually out of band. Bundle endpoints MUST be keyed by the trust domain identifier.
@@ -642,6 +644,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Clarify use of `https_web` and `https_spiffe` profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
