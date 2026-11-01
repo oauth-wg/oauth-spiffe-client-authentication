@@ -1599,30 +1599,31 @@ Certificate:
         </h3>
 <p id="section-3.3-1">A WIT-SVID is a WIMSE Workload Identity Token (WIT) as defined in <span>[<a href="#I-D.draft-ietf-wimse-workload-creds" class="cite xref">I-D.draft-ietf-wimse-workload-creds</a>]</span> that contains a SPIFFE ID in the <code>sub</code> claim <span>[<a href="#SPIFFE_WIT" class="cite xref">SPIFFE_WIT</a>]</span>. It uses OAuth 2.0 Attestation-Based Client Authentication <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> for client authentication.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">A WIT-SVID as issued by a SPIFFE implementation binds a key pair held by the client via the <code>cnf</code> claim. The key pair bound to the WIT-SVID is used to generate an attestation proof during client authentication. The attestation proof is in the form of a "Client Attestation PoP JWT" as defined in <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> that is issued by the client and signed with the private part of the key pair bound in the WIT-SVID.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
-<p id="section-3.3-3">The WIT-SVID and the corresponding Client Attestation PoP JWT are sent together to the authorization server as a means of client authentication using the HTTP header-based syntax defined in Section 6.1 of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
+<p id="section-3.3-3">The request <span class="bcp14">MAY</span> include the <code>client_id</code> parameter. If present, the SPIFFE ID carried in the <code>sub</code> claim of the WIT-SVID <span class="bcp14">MUST</span> be authorized to authenticate as the client identified by the <code>client_id</code>, as described below.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
 <div id="wit-svid-validation">
 <section id="section-3.3.1">
           <h4 id="name-authorization-server-valida">
 <a href="#section-3.3.1" class="section-number selfRef">3.3.1. </a><a href="#name-authorization-server-valida" class="section-name selfRef">Authorization Server Validation</a>
           </h4>
-<p id="section-3.3.1-1">To validate a WIT-SVID client authentication request, the authorization server <span class="bcp14">MUST</span> apply the following rules:<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-1">This specification is a profile of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> as described in Section 13 of that document. The authorization server determines that this profile applies when the <code>typ</code> JWT header parameter of the <code>OAuth-Client-Attestation</code> header is <code>wit+jwt</code>.<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-2">To validate a WIT-SVID client authentication request, the authorization server <span class="bcp14">MUST</span> apply the following rules:<a href="#section-3.3.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-3.3.1-2.1">
-              <p id="section-3.3.1-2.1.1">The authorization server <span class="bcp14">MUST</span> accept <code>wit+jwt</code> as a valid value of the <code>typ</code> JWT header parameter in the <code>OAuth-Client-Attestation</code> header, in addition to <code>oauth-client-attestation+jwt</code>.<a href="#section-3.3.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-3.3.1-3.1">
+              <p id="section-3.3.1-3.1.1">The authorization server <span class="bcp14">MUST</span> accept <code>wit+jwt</code> as a valid value of the <code>typ</code> JWT header parameter in the <code>OAuth-Client-Attestation</code> header, in addition to <code>oauth-client-attestation+jwt</code>.<a href="#section-3.3.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.3.1-2.2">
-              <p id="section-3.3.1-2.2.1">The WIT-SVID <span class="bcp14">MUST</span> be validated as a Workload Identity Token according to Section 3.1 of <span>[<a href="#I-D.draft-ietf-wimse-workload-creds" class="cite xref">I-D.draft-ietf-wimse-workload-creds</a>]</span>.<a href="#section-3.3.1-2.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.3.1-3.2">
+              <p id="section-3.3.1-3.2.1">The WIT-SVID <span class="bcp14">MUST</span> be validated as a Workload Identity Token according to Section 5.1.3 of <span>[<a href="#I-D.draft-ietf-wimse-workload-creds" class="cite xref">I-D.draft-ietf-wimse-workload-creds</a>]</span>.<a href="#section-3.3.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.3.1-2.3">
-              <p id="section-3.3.1-2.3.1">The WIT-SVID signature <span class="bcp14">MUST</span> be verified using the signing keys of the trust domain according to <a href="#spiffe-bundle-validation" class="auto internal xref">Section 6</a>.<a href="#section-3.3.1-2.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.3.1-3.3">
+              <p id="section-3.3.1-3.3.1">The WIT-SVID signature <span class="bcp14">MUST</span> be verified using the signing keys of the trust domain according to <a href="#spiffe-bundle-validation" class="auto internal xref">Section 6</a>.<a href="#section-3.3.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-3.3.1-2.4">
-              <p id="section-3.3.1-2.4.1">The Client Attestation PoP JWT <span class="bcp14">MUST</span> be validated according to Section 5.2 of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>.<a href="#section-3.3.1-2.4.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-3.3.1-3.4">
+              <p id="section-3.3.1-3.4.1">If the request contains a <code>client_id</code> parameter, the SPIFFE ID in the <code>sub</code> claim <span class="bcp14">MUST</span> be associated with the client it identifies, as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a> or through the client's registration with the authorization server. This replaces the <code>client_id</code> to <code>sub</code> matching rule of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>. If <code>client_id</code> is absent, the SPIFFE ID in the <code>sub</code> claim identifies the client.<a href="#section-3.3.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-3.3.1-3.1">
-              <p id="section-3.3.1-3.1.1">TODO: What to do with <code>attest_jwt_client_auth</code> method in AS metadata?<a href="#section-3.3.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-3.3.1-4.1">
+              <p id="section-3.3.1-4.1.1">TODO: What to do with <code>attest_jwt_client_auth</code> method in AS metadata?<a href="#section-3.3.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
@@ -1632,7 +1633,7 @@ Certificate:
           <h4 id="name-wit-svid-example">
 <a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-wit-svid-example" class="section-name selfRef">WIT-SVID Example</a>
           </h4>
-<p id="section-3.3.2-1">The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-1">The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication. The client is registered at the authorization server with <code>client_id</code> <code>s6BhdRkqt3</code> and associated with the SPIFFE ID <code>spiffe://example.org/my-oauth-client</code>.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.3.2-2">The WIT-SVID (OAuth-Client-Attestation) header and body decoded:<a href="#section-3.3.2-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-3.3.2-3">
 <pre>
@@ -1649,6 +1650,7 @@ Certificate:
   "cnf": {
     "jwk": {
       "kty": "EC",
+      "alg": "ES256",
       "crv": "P-256",
       "x": "bVtfeeqioPItPfBpVgPdG1LPmAgGTMhUHV6IK9olqDE",
       "y": "vLXTrclqzyq7BDaL471iew6o7B-mwoE6T9zUC4ZeDgA"
