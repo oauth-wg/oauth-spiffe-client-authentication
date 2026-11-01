@@ -241,7 +241,7 @@ The `client_id` points to a Client ID Metadata Document ({{I-D.ietf-oauth-client
 ~~~
 
 
-## Client Authentication using X509-SVID
+## Client Authentication using X509-SVID {#x509-svid}
 
 X.509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication {{RFC8705}}, with specific adaptations for SPIFFE X.509-SVIDs.
 
