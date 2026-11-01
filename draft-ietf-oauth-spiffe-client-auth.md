@@ -440,7 +440,7 @@ Server authentication on this endpoint is available in two flavors. For the sake
 
 The authorization server SHOULD periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See {{SPIFFE_FEDERATION}} for details.
 
-The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and MUST be configured manually out of band. Bundle endpoints MUST be keyed by the trust domain identifier.
+The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or WIT-SVID and MUST be configured out of band, except as permitted for Client ID Metadata Documents in {{cimd-bundle-security}}. The authorization server MUST associate each bundle endpoint with exactly one trust domain, and MUST use keys obtained from that endpoint only to validate SVIDs whose SPIFFE ID is in that trust domain.
 
 ### Example
 
@@ -602,6 +602,14 @@ Client authentication using X509-SVIDs has the same security considerations as d
 The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.
 
+## Trust Bundles from Client ID Metadata Documents {#cimd-bundle-security}
+
+An authorization server that accepts Client ID Metadata Documents trusts the party that controls the `client_id` URL to describe the client. That party can register a client and, through the `spiffe_bundle_endpoint` parameter, introduce the trust bundle used to validate the client's SVIDs. The trust model therefore rests on control of the domain and the integrity of the HTTPS retrieval, as described in the Security Considerations of {{I-D.ietf-oauth-client-id-metadata-document}}. In return, trust bundles can be obtained dynamically, without configuring a bundle endpoint for each trust domain in advance.
+
+Each deployment decides whether to accept trust bundles on this basis. Deployments that do not SHOULD NOT use `spiffe_bundle_endpoint` values from Client ID Metadata Documents and SHOULD use bundle endpoints configured as described in {{spiffe-bundle-validation}}.
+
+Deployments that accept Client ID Metadata Documents can apply additional mitigations, depending on their risk exposure. An authorization server may use keys obtained from a document only for SVIDs whose SPIFFE ID matches the `spiffe_id` value in that document, or only for the client identified by that `client_id`. It may discard the keys together with the cached document, rather than add them to a configured trust bundle. If a bundle endpoint is already configured for the trust domain, that endpoint may take precedence over the value in the document. The `spiffe_id` may be required to be an exact match rather than a wildcard. Its trust domain may be required to match the host of the `client_id` URL. Domain allowlists and pre-registration of Client Identifier URLs, described in {{I-D.ietf-oauth-client-id-metadata-document}}, limit which parties can introduce a bundle. Tokens issued to such clients may be short-lived or sender-constrained. A change in the `spiffe_id`, the `spiffe_bundle_endpoint`, or the keys it serves may be treated as a change in client keys, as described in {{I-D.ietf-oauth-client-id-metadata-document}}.
+
 ## JWT-SVID and WIT-SVID iss claim {#iss-claim-security-considerations}
 
 As described in {{svid-iss-claim}}, `iss`-based key discovery is not a general alternative to the SPIFFE Bundle Endpoint and SHOULD be avoided.
@@ -642,6 +650,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Describe the trust model and mitigations for obtaining trust bundles from Client ID Metadata Documents (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55)
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
