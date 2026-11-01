@@ -104,7 +104,7 @@ This specification profiles the Assertion Framework for OAuth 2.0 Client Authent
 
 This profile focuses on using SPIFFE credentials for OAuth client authentication.
 
-The SPIFFE profile for client authentication enables seamless integration between SPIFFE-based and OAuth-based systems, allowing applications to leverage both ecosystems without requiring additional credential management. It also enables a more secure authentication method by leveraging cryptographically verifiable credentials rather than shared secrets.
+The SPIFFE profile for client authentication enables seamless integration between SPIFFE-based and OAuth-based systems, allowing applications to leverage both ecosystems without requiring additional credential management. It also enables a more secure authentication method by leveraging cryptographically verifiable credentials rather than shared secrets. 
 
 # Conventions and Definitions
 
@@ -256,6 +256,8 @@ The server validates the client certificates according the following rules
 3. Verify that the certificate is a leaf certificate (Basic Constraints extension has CA=FALSE).
 4. Verify that the certificate has the `digitalSignature` key usage bit set.
 5. Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the URI SAN matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the `client_id`.
+
+Authorization servers MAY issue certificate-bound access tokens as described in Section 3 of {{RFC8705}} to clients authenticated with an X.509-SVID. Because X.509-SVIDs are typically short-lived, such an access token cannot be used once the client's X.509-SVID has been rotated, and the client needs to obtain a new access token.
 
 ### X509-SVID Example
 
@@ -642,6 +644,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
