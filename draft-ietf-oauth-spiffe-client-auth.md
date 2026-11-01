@@ -325,22 +325,24 @@ A WIT-SVID is a WIMSE Workload Identity Token (WIT) as defined in {{?I-D.draft-i
 
 A WIT-SVID as issued by a SPIFFE implementation binds a key pair held by the client via the `cnf` claim. The key pair bound to the WIT-SVID is used to generate an attestation proof during client authentication. The attestation proof is in the form of a "Client Attestation PoP JWT" as defined in {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} that is issued by the client and signed with the private part of the key pair bound in the WIT-SVID.
 
-The WIT-SVID and the corresponding Client Attestation PoP JWT are sent together to the authorization server as a means of client authentication using the HTTP header-based syntax defined in Section 6.1 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+The request MAY include the `client_id` parameter. If present, the SPIFFE ID carried in the `sub` claim of the WIT-SVID MUST be authorized to authenticate as the client identified by the `client_id`, as described below.
 
 ### Authorization Server Validation {#wit-svid-validation}
+
+This specification is a profile of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} as described in Section 13 of that document. The authorization server determines that this profile applies when the `typ` JWT header parameter of the `OAuth-Client-Attestation` header is `wit+jwt`.
 
 To validate a WIT-SVID client authentication request, the authorization server MUST apply the following rules:
 
 * The authorization server MUST accept `wit+jwt` as a valid value of the `typ` JWT header parameter in the `OAuth-Client-Attestation` header, in addition to `oauth-client-attestation+jwt`.
-* The WIT-SVID MUST be validated as a Workload Identity Token according to Section 3.1 of {{?I-D.draft-ietf-wimse-workload-creds}}.
+* The WIT-SVID MUST be validated as a Workload Identity Token according to Section 5.1.3 of {{?I-D.draft-ietf-wimse-workload-creds}}.
 * The WIT-SVID signature MUST be verified using the signing keys of the trust domain according to {{spiffe-bundle-validation}}.
-* The Client Attestation PoP JWT MUST be validated according to Section 5.2 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+* If the request contains a `client_id` parameter, the SPIFFE ID in the `sub` claim MUST be associated with the client it identifies, as described in {{client-registration-metadata}} or through the client's registration with the authorization server. This replaces the `client_id` to `sub` matching rule of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}. If `client_id` is absent, the SPIFFE ID in the `sub` claim identifies the client.
 
 > TODO: What to do with `attest_jwt_client_auth` method in AS metadata?
 
 ### WIT-SVID Example
 
-The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication.
+The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication. The client is registered at the authorization server with `client_id` `s6BhdRkqt3` and associated with the SPIFFE ID `spiffe://example.org/my-oauth-client`.
 
 The WIT-SVID (OAuth-Client-Attestation) header and body decoded:
 
@@ -358,6 +360,7 @@ The WIT-SVID (OAuth-Client-Attestation) header and body decoded:
   "cnf": {
     "jwk": {
       "kty": "EC",
+      "alg": "ES256",
       "crv": "P-256",
       "x": "bVtfeeqioPItPfBpVgPdG1LPmAgGTMhUHV6IK9olqDE",
       "y": "vLXTrclqzyq7BDaL471iew6o7B-mwoE6T9zUC4ZeDgA"
