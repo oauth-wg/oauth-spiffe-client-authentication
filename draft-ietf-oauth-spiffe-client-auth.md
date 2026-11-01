@@ -104,7 +104,7 @@ This specification profiles the Assertion Framework for OAuth 2.0 Client Authent
 
 This profile focuses on using SPIFFE credentials for OAuth client authentication.
 
-The SPIFFE profile for client authentication enables seamless integration between SPIFFE-based and OAuth-based systems, allowing applications to leverage both ecosystems without requiring additional credential management. It also enables a more secure authentication method by leveraging cryptographically verifiable credentials rather than shared secrets. 
+The SPIFFE profile for client authentication enables seamless integration between SPIFFE-based and OAuth-based systems, allowing applications to leverage both ecosystems without requiring additional credential management. It also enables a more secure authentication method by leveraging cryptographically verifiable credentials rather than shared secrets.
 
 # Conventions and Definitions
 
