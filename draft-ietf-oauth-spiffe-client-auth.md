@@ -134,6 +134,7 @@ This specification uses the terms defined in OAuth 2.0 {{RFC6749}}, the Assertio
 - **JWT-SVID**: A JSON Web Token (JWT) that contains a SPIFFE ID in the `sub` claim. See {{SPIFFE_JWT}} for details.
 
 - **WIT-SVID**: A WIMSE Workload Identity Token (WIT) that contains a SPIFFE ID in the `sub` claim. See {{SPIFFE_WIT}} for details.
+  
 **SPIFFE Bundle**: A collection of public keys and associated metadata that allow validation of SVIDs issued by a trust domain.
 
 **SPIFFE Bundle Endpoint**: A URL that serves a SPIFFE bundle for a trust domain.
@@ -271,7 +272,7 @@ To authenticate using an X509-SVID, the client establishes a mutual TLS connecti
 
 The authorization server determines that X509-SVID client authentication applies from the client's registered authentication method (e.g., a `token_endpoint_auth_method` value of `spiffe_x509`), and not from the format of the `client_id` value.
 
-The `client_id` parameter is OPTIONAL. This deviates from Section 2 of {{RFC8705}}, which requires the `client_id` parameter for mutual-TLS client authentication. Because the X.509-SVID carries exactly one SPIFFE ID in its URI SAN, the client can be identified from the certificate without ambiguity. See {{client-identification}}.
+The `client_id` parameter is OPTIONAL. This deviates from Section 2 of {{RFC8705}}, which requires the `client_id` parameter for mutual-TLS client authentication. Because the X509-SVID carries exactly one SPIFFE ID in its URI SAN, the client can be identified from the certificate without ambiguity. See {{client-identification}}.
 
 The authorization server validates the client certificate according to the following rules:
 
@@ -725,7 +726,6 @@ This document requests the following entries in the "OAuth Token Endpoint Authen
 
 * Make the `client_id` parameter optional for all client authentication methods and define unified client identification rules.
 * Regenerate the examples for consistency (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/50)
-* Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Describe the trust model and mitigations for obtaining trust bundles from Client ID Metadata Documents (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55)
 * Fixed Nits (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/67)
 * Reference X509-SVID validation rules instead of restating them (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52)
