@@ -429,7 +429,7 @@ spiffe_id
 : REQUIRED. The SPIFFE ID of the client, e.g. `spiffe://example.org/my-oauth-client`. The value MAY include a trailing `/*` character sequence (e.g. `spiffe://example.org/workloads/*`) indicating that a prefix match against the SPIFFE ID of the presented SVID is acceptable rather than requiring an exact match.
 
 spiffe_bundle_endpoint
-: OPTIONAL. The URL of the SPIFFE Bundle Endpoint for the client's trust domain, which the authorization server can use to retrieve the signing keys for validating the client's SVIDs. If not provided, the authorization server MUST obtain the signing keys for the client's trust domain through some other established mechanism, such as a pre-configured SPIFFE bundle.
+: OPTIONAL. The URL of the SPIFFE Bundle Endpoint for the client's trust domain, which the authorization server can use to retrieve the signing keys for validating the client's SVIDs. If not provided, the authorization server MUST obtain the signing keys for the client's trust domain through some other established mechanism, such as a pre-configured SPIFFE bundle. Bundles obtained from this endpoint are subject to {{client-scoped-bundles}}. See also {{cimd-bundle-security}}.
 
 If the `spiffe_id` value uses a wildcard, it MUST end with the two-character sequence "`/*`". In this case, the authorization server MUST perform a path-segment prefix match: the SPIFFE ID of the presented SVID MUST begin with the `spiffe_id` value excluding the trailing "`*`" (i.e., up to and including the final "`/`"), and this prefix MUST correspond to complete path segment(s) of the SPIFFE ID (for example, `spiffe://example.org/client/*` matches `spiffe://example.org/client/123` but does not match `spiffe://example.org/client123`). Otherwise, the SPIFFE ID of the presented SVID MUST be an exact match of the `spiffe_id` value.
 
@@ -439,12 +439,23 @@ A client indicates the SPIFFE-based client authentication methods it supports in
 
 This section describes how an authorization server verifies the signature of SVIDs. It recommends two SPIFFE-native approaches.
 
-Trust bundles in general MUST be keyed by the trust domain identifier to prevent mix up between trust domain and their corresponding bundles. The 2 approaches can be used in conjunction, for instance:
+The 2 approaches can be used in conjunction, for instance:
 
 ~~~
 Trust domain "example.org": Workload API at unix:///var/secrets/spiffe/agent.sock
 Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/spiffe/bundle.json
 ~~~
+
+Trust bundles in general MUST be keyed by the trust domain identifier to prevent mix-up between trust domains and their corresponding bundles. Bundles obtained from client metadata are additionally keyed by the `client_id`, as described in {{client-scoped-bundles}}.
+
+## Bundles from Client Metadata {#client-scoped-bundles}
+
+When an authorization server obtains a bundle from a client's `spiffe_bundle_endpoint`, it MUST:
+
+* associate the bundle with both the `client_id` and the trust domain of the client's `spiffe_id`, and use it only to validate SVIDs presented to authenticate as that client;
+* not add the bundle's keys to any bundle it holds for that trust domain, nor use them to validate SVIDs presented for any other client.
+
+If the authorization server has a bundle for the trust domain obtained as described in {{spiffe-bundle-validation}}, it SHOULD use that bundle and ignore `spiffe_bundle_endpoint`.
 
 ## SPIFFE Bundle Endpoint
 
@@ -454,7 +465,9 @@ SPIFFE Federation {{SPIFFE_FEDERATION}} defines two endpoint profiles for servin
 
 The authorization server SHOULD manage and refresh trust bundles according to Section 4.1 and 4.2 of {{SPIFFE_FEDERATION}}.
 
-The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE-ID and MUST be configured out of band, except as permitted for Client ID Metadata Documents in {{cimd-bundle-security}}. The authorization server MUST associate each bundle endpoint with exactly one trust domain, and MUST use keys obtained from that endpoint only to validate SVIDs whose SPIFFE ID is in that trust domain.
+The authorization server MUST associate each bundle endpoint with exactly one trust domain, and MUST use keys obtained from that endpoint only to validate SVIDs.
+
+At the time of writing, the SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE-ID and MUST be configured out of band. The security considerations that apply when configuring it using `spiffe_bundle_endpoint` of Client ID Metadata Documents are described in {#cimd-bundle-security}.
 
 ### Example
 
@@ -623,11 +636,19 @@ Deployments requiring replay resistance SHOULD either use JWT-SVIDs that carry a
 
 ## Trust Bundles from Client ID Metadata Documents {#cimd-bundle-security}
 
-An authorization server that accepts Client ID Metadata Documents trusts the party that controls the `client_id` URL to describe the client. That party can register a client and, through the `spiffe_bundle_endpoint` parameter, introduce the trust bundle used to validate the client's SVIDs. The trust model therefore rests on control of the domain and the integrity of the HTTPS retrieval, as described in the Security Considerations of {{I-D.ietf-oauth-client-id-metadata-document}}. In return, trust bundles can be obtained dynamically, without configuring a bundle endpoint for each trust domain in advance.
+When an authorization server accepts `spiffe_bundle_endpoint` from a Client ID Metadata Document, the party controlling the `client_id` URL also selects the keys used to validate the client's SVIDs. Successful authentication then shows that the client holds a key vouched for by that party, not that the trust domain named in `spiffe_id` issued the SVID. The trust model rests on control of the `client_id` host and the integrity of HTTPS retrieval, as described in the Security Considerations of {{I-D.ietf-oauth-client-id-metadata-document}}. In return, trust bundles can be obtained without configuring a bundle endpoint for each trust domain in advance. Deployments that do not accept this trust model MUST ignore `spiffe_bundle_endpoint` values in Client ID Metadata Documents and SHOULD obtain bundles as described in {{spiffe-bundle-validation}}.
 
-Each deployment decides whether to accept trust bundles on this basis. Deployments that do not SHOULD NOT use `spiffe_bundle_endpoint` values from Client ID Metadata Documents and SHOULD use bundle endpoints configured as described in {{spiffe-bundle-validation}}.
+If keys from a document were used beyond the client it describes, an attacker controlling a single document could introduce a signing key of its choice, issue SVIDs for any SPIFFE ID in that trust domain, and authenticate as any other client associated with that trust domain. The rules in {{client-scoped-bundles}} prevent this. They extend the binding between trust domain and bundle described in Section 7.3 of {{SPIFFE_FEDERATION}} to include the `client_id`.
 
-Deployments that accept Client ID Metadata Documents can apply additional mitigations, depending on their risk exposure. An authorization server may use keys obtained from a document only for SVIDs whose SPIFFE ID matches the `spiffe_id` value in that document, or only for the client identified by that `client_id`. It may discard the keys together with the cached document, rather than add them to a configured trust bundle. If a bundle endpoint is already configured for the trust domain, that endpoint may take precedence over the value in the document. The `spiffe_id` may be required to be an exact match rather than a wildcard. Its trust domain may be required to match the host of the `client_id` URL. Domain allowlists and pre-registration of Client Identifier URLs, described in {{I-D.ietf-oauth-client-id-metadata-document}}, limit which parties can introduce a bundle. Tokens issued to such clients may be short-lived or sender-constrained. A change in the `spiffe_id`, the `spiffe_bundle_endpoint`, or the keys it serves may be treated as a change in client keys, as described in {{I-D.ietf-oauth-client-id-metadata-document}}.
+Client scoping does not prevent a document from claiming a trust domain its author does not operate. Trust domain names are chosen by their operators and are not bound to DNS ({{SPIFFE_ID}}), so a document hosted at `https://attacker.example/` can declare a `spiffe_id` of `spiffe://bank.example/payments` together with its own bundle. The attacker can then authenticate only as its own client, but the SPIFFE ID it presents was not issued by the `bank.example` trust domain. Unless the bundle was obtained as described in {{spiffe-bundle-validation}}, or the trust domain is bound to the host of the `client_id` URL, the authorization server MUST NOT treat that SPIFFE ID as issued by the trust domain, for example in authorization policy, access token claims or introspection responses.
+
+Authorization servers that accept bundles from documents SHOULD apply one or more of the following mitigations:
+
+* require the trust domain of `spiffe_id` to equal, or be a subdomain of, the host of the `client_id` URL;
+* require `spiffe_id` to be an exact SPIFFE ID rather than a wildcard;
+* restrict which `client_id` URLs are accepted using domain allowlists or pre-registration as described in {{I-D.ietf-oauth-client-id-metadata-document}};
+* issue short-lived or sender-constrained access tokens to such clients;
+* treat a change in `spiffe_id`, `spiffe_bundle_endpoint`, or the keys it serves as a change in client keys, as described in {{I-D.ietf-oauth-client-id-metadata-document}}.
 
 ## JWT-SVID and WIT-SVID iss claim {#iss-claim-security-considerations}
 
