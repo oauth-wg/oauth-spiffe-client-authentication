@@ -602,9 +602,9 @@ Client authentication using X509-SVIDs has the same security considerations as d
 The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.
 
-## Authorization Server Certificate
+## Authorization Server Authentication in Mutual TLS
 
-Mutual TLS does not require the client and the authorization server to use certificates from the same PKI. When a client authenticates using an X.509-SVID, the authorization server MAY present a WebPKI certificate, issued by a certificate authority that the client trusts for HTTPS and valid for the host in the authorization server's endpoint URL. The authorization server is not required to present an X.509-SVID.
+Mutual TLS does not require the client and the authorization server to use certificates from the same PKI. Because the client authenticates the authorization server using its regular HTTPS trust anchors (see Section 3.2), the authorization server presents a certificate from a PKI the client trusts for HTTPS, such as a WebPKI certificate valid for the host in the authorization server’s endpoint URL. The authorization server does not present an X.509-SVID, and the client does not need the SPIFFE trust bundle of any trust domain to authenticate the authorization server.
 
 ## JWT-SVID and WIT-SVID iss claim {#iss-claim-security-considerations}
 
