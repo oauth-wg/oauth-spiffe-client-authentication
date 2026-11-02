@@ -436,13 +436,13 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
 
 ## SPIFFE Bundle Endpoint
 
-The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to {{RFC7517}}.
+The SPIFFE Bundle Endpoint as defined in Section 4 of {{SPIFFE_FEDERATION}} exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to {{RFC7517}}.
 
-Server authentication on this endpoint is available in two flavors. For the sake of interoperability, in the context of this specification the WebPKI flavor MUST be used. This effectively means that the server certificate of the bundle endpoint is trusted by the authorization server accessing it. See Sec 5.2.1 of {{SPIFFE_FEDERATION}} for details.
+SPIFFE Federation {{SPIFFE_FEDERATION}} defines two endpoint profiles for serving and consuming a bundle endpoint. For interoperability, the authorization server MUST use the `https_web` profile (Section 5.2.1 of {{SPIFFE_FEDERATION}}). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. This specification does not use the `https_spiffe` profile.
 
-The authorization server SHOULD periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See {{SPIFFE_FEDERATION}} for details.
+The authorization server SHOULD manage and refresh trust bundles according to Section 4.1 and 4.2 of {{SPIFFE_FEDERATION}}.
 
-The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and MUST be configured manually out of band. Bundle endpoints MUST be keyed by the trust domain identifier.
+The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE ID. A relying party MUST therefore obtain the bundle endpoint through out-of-band configuration and MUST associate it with the name of the trust domain whose bundle it serves. Future profiles may define other means of discovering the bundle endpoint.
 
 ### Example
 
@@ -650,6 +650,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Clarify use of `https_web` and `https_spiffe` profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)
 * Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)
 * Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)
 
