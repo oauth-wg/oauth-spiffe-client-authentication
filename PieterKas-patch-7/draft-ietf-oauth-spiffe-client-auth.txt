@@ -89,7 +89,7 @@ Table of Contents
      3.1.  Client Authentication with JWT-SVIDs
        3.1.1.  JWT-SVID example
        3.1.2.  JWT-SVID example with Client ID Metadata Document
-     3.2.  Client Authentication using X.509-SVID
+     3.2.  Client Authentication using X509-SVID
        3.2.1.  X509-SVID Example
      3.3.  Client Authentication with WIT-SVIDs
        3.3.1.  Authorization Server Validation
@@ -345,7 +345,7 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
       "spiffe_bundle_endpoint": "https://example.org/client/bundle.json"
   }
 
-3.2.  Client Authentication using X.509-SVID
+3.2.  Client Authentication using X509-SVID
 
    X509-SVID based authentication uses mutual TLS as defined in OAuth
    2.0 Mutual-TLS Client Authentication [RFC8705], with specific
@@ -397,8 +397,8 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
 
    Authorization servers MAY issue certificate-bound access tokens as
    described in Section 3 of [RFC8705] to clients authenticated with an
-   X.509-SVID.  Because X.509-SVIDs are typically short-lived, such an
-   access token cannot be used once the client's X.509-SVID has been
+   X509-SVID.  Because X509-SVIDs are typically short-lived, such an
+   access token cannot be used once the client's X509-SVID has been
    rotated, and the client needs to obtain a new access token.
 
 3.2.1.  X509-SVID Example
@@ -566,7 +566,7 @@ client_id=spiffe://example.org/my-oauth-client
    authentication methods are supported.
 
    Authorization servers MUST support at least one of JWT-SVID,
-   X.509-SVID or WIT-SVID.  The methods supported MUST be advertised in
+   X509-SVID or WIT-SVID.  The methods supported MUST be advertised in
    the authorization servers metadata [RFC8414] by including spiffe_jwt,
    spiffe_wit and/or spiffe_x509 in the
    token_endpoint_auth_methods_supported list.  Additionally, the same
@@ -630,8 +630,7 @@ client_id=spiffe://example.org/my-oauth-client
 6.  SPIFFE Key Distribution and Validation
 
    This section describes how an authorization server verifies the
-   signature of an X509-SVID or JWT-SVID.  It recommends two SPIFFE-
-   native approaches.
+   signature of SVIDs.  It recommends two SPIFFE-native approaches.
 
    Trust bundles in general MUST be keyed by the trust domain identifier
    to prevent mix up between trust domain and their corresponding
@@ -643,9 +642,8 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
 6.1.  SPIFFE Bundle Endpoint
 
    The SPIFFE Bundle Endpoint as defined in Section 4 of
-   [SPIFFE_FEDERATION] exposes the signing keys for X509-SVIDs, JWT-
-   SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to
-   [RFC7517].
+   [SPIFFE_FEDERATION] exposes the signing keys for SVIDs over HTTP via
+   a JSON Web Key Set according to [RFC7517].
 
    SPIFFE Federation [SPIFFE_FEDERATION] defines two endpoint profiles
    for serving and consuming a bundle endpoint.  For interoperability,
@@ -672,8 +670,8 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
    note is the difference between example.org trust domain and
    example.com location for the SPIFFE Bundle Endpoint.  This highlights
    the importance of explicit configuration and demonstrates why the
-   SPIFFE Bundle Endpoint cannot be derived or discovered from the JWT-
-   SVID, X509-SVID or WIT-SVID without explicit configuration.
+   SPIFFE Bundle Endpoint cannot be derived or discovered from SVIDs
+   without explicit configuration.
 
    Example configuration at the OAuth Authorization Server in the JSON
    format
@@ -913,7 +911,7 @@ Certificate:
 
    Deployments requiring replay resistance SHOULD either use JWT-SVIDs
    that carry a unique jti claim and are not reused, with the
-   authorization server rejecting a repeated jti, or use X.509-SVID or
+   authorization server rejecting a repeated jti, or use X509-SVID or
    WIT-SVID client authentication, which require proof of possession of
    a private key.
 
