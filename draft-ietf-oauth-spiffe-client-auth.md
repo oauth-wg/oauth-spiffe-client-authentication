@@ -241,7 +241,7 @@ The `client_id` points to a Client ID Metadata Document ({{I-D.ietf-oauth-client
 ~~~
 
 
-## Client Authentication using X509-SVID
+## Client Authentication using X.509-SVID {#x509-svid}
 
 X.509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication {{RFC8705}}, with specific adaptations for SPIFFE X.509-SVIDs.
 
@@ -319,7 +319,7 @@ Certificate:
         9e:f2:27:c2:3c:e4:03:58:a8:47:21:f6:3c:5e:7a:c8
 ~~~
 
-## Client Authentication with WIT-SVIDs
+## Client Authentication with WIT-SVIDs {#wit-svid}
 
 A WIT-SVID is a WIMSE Workload Identity Token (WIT) as defined in {{?I-D.draft-ietf-wimse-workload-creds}} that contains a SPIFFE ID in the `sub` claim {{SPIFFE_WIT}}. It uses OAuth 2.0 Attestation-Based Client Authentication {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} for client authentication.
 
@@ -395,11 +395,11 @@ code=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&
 client_id=spiffe://example.org/my-oauth-client
 ~~~
 
-# Interoperability
+# Interoperability {#interoperability}
 
 In order to achieve interoperability between the authorization server and clients the authorization server MUST advertise what client authentication methods are supported.
 
-Authorization servers MUST support at least one of JWT-SVID, X509-SVID or WIT-SVID. The methods supported MUST be advertised in the authorization servers metadata {{RFC8414}} by including `spiffe_jwt`, `spiffe_wit` and/or `spiffe_x509` in the `token_endpoint_auth_methods_supported` list. Additionally, the same should be included in `revocation_endpoint_auth_methods_supported` and `introspection_endpoint_auth_methods_supported` when applicable.
+Authorization servers MUST support at least one of JWT-SVID, X.509-SVID or WIT-SVID. The methods supported MUST be advertised in the authorization servers metadata {{RFC8414}} by including `spiffe_jwt`, `spiffe_wit` and/or `spiffe_x509` in the `token_endpoint_auth_methods_supported` list. Additionally, the same values should be included in `revocation_endpoint_auth_methods_supported` and `introspection_endpoint_auth_methods_supported` when applicable.
 
 Clients MUST support at least one of JWT-SVID, X509-SVID or WIT-SVID. To guarantee interoperability a client SHOULD support all.
 
@@ -641,6 +641,22 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 - Change Controller: IETF
 - Reference: This Document
 
+## OAuth Token Endpoint Authentication Methods
+
+This document requests the following entries in the "OAuth Token Endpoint Authentication Methods" registry:
+
+- Token Endpoint Authentication Method Name: `spiffe_jwt`
+- Change Controller: IETF
+- Reference: {{jwt-svid}} of this document
+
+- Token Endpoint Authentication Method Name: `spiffe_x509`
+- Change Controller: IETF
+- Reference: {{x509-svid}} of this document
+
+- Token Endpoint Authentication Method Name: `spiffe_wit`
+- Change Controller: IETF
+- Reference: {{wit-svid}} of this document
+
 --- back
 
 # Document History
@@ -650,6 +666,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Register `spiffe_jwt`, `spiffe_x509` and `spiffe_wit` in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)
 * Clarify Authorization Server Authentication when using mutual TLS.
 * Clarify use of `https_web` and `https_spiffe` profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)
 * Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)
