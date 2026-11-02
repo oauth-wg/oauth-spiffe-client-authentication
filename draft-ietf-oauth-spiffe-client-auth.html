@@ -11,7 +11,7 @@
 <meta content="Stian Thorgersen" name="author">
 <meta content="Nancy Cam-Winget" name="author">
 <meta content="
-       This specification profiles the Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants  , the JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants  , and OAuth 2.0 Attestation-Based Client Authentication   to enable the use of SPIFFE Verifiable Identity Documents (SVIDs) as client credentials in OAuth 2.0. It defines how OAuth clients with SPIFFE credentials can authenticate to OAuth authorization servers using their JWT-SVIDs, WIT-SVIDs, or X.509-SVIDs without the need for client secrets. This approach enhances security by enabling seamless integration between SPIFFE-enabled workloads and OAuth authorization servers while eliminating the need to distribute and manage shared secrets such as static client secrets. 
+       This specification profiles the Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants  , the JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants  , and OAuth 2.0 Attestation-Based Client Authentication   to enable the use of SPIFFE Verifiable Identity Documents (SVIDs) as client credentials in OAuth 2.0. It defines how OAuth clients with SPIFFE credentials can authenticate to OAuth authorization servers using their JWT-SVIDs, WIT-SVIDs, or X509-SVIDs without the need for client secrets. This approach enhances security by enabling seamless integration between SPIFFE-enabled workloads and OAuth authorization servers while eliminating the need to distribute and manage shared secrets such as static client secrets. 
     " name="description">
 <meta content="xml2rfc 3.34.1" name="generator">
 <meta content="workload" name="keyword">
@@ -1099,7 +1099,7 @@ svg {
 <h1 id="title">OAuth SPIFFE Client Authentication</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">This specification profiles the Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span>, the JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>, and OAuth 2.0 Attestation-Based Client Authentication <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> to enable the use of SPIFFE Verifiable Identity Documents (SVIDs) as client credentials in OAuth 2.0. It defines how OAuth clients with SPIFFE credentials can authenticate to OAuth authorization servers using their JWT-SVIDs, WIT-SVIDs, or X.509-SVIDs without the need for client secrets. This approach enhances security by enabling seamless integration between SPIFFE-enabled workloads and OAuth authorization servers while eliminating the need to distribute and manage shared secrets such as static client secrets.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This specification profiles the Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span>, the JWT Profile for OAuth 2.0 Client Authentication and Authorization Grants <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>, and OAuth 2.0 Attestation-Based Client Authentication <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> to enable the use of SPIFFE Verifiable Identity Documents (SVIDs) as client credentials in OAuth 2.0. It defines how OAuth clients with SPIFFE credentials can authenticate to OAuth authorization servers using their JWT-SVIDs, WIT-SVIDs, or X509-SVIDs without the need for client secrets. This approach enhances security by enabling seamless integration between SPIFFE-enabled workloads and OAuth authorization servers while eliminating the need to distribute and manage shared secrets such as static client secrets.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1190,7 +1190,7 @@ svg {
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
-                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-client-authentication-using" class="internal xref">Client Authentication using X.509-SVID</a></p>
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-client-authentication-using" class="internal xref">Client Authentication using X509-SVID</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2.2.1">
                     <p id="section-toc.1-1.3.2.2.2.1.1"><a href="#section-3.2.1" class="auto internal xref">3.2.1</a>.  <a href="#name-x509-svid-example" class="internal xref">X509-SVID Example</a></p>
@@ -1348,7 +1348,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <p id="section-2.1-4"><strong>SVID</strong>: A SPIFFE Verifiable Identity Document. This document specifies the use of three types of SVIDs:<a href="#section-2.1-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.1-5.1">
-            <p id="section-2.1-5.1.1"><strong>X.509-SVID</strong>: An X.509 certificate that contains a SPIFFE ID in the URI SAN extension. See <span>[<a href="#SPIFFE_X509" class="cite xref">SPIFFE_X509</a>]</span> for details.<a href="#section-2.1-5.1.1" class="pilcrow">¶</a></p>
+            <p id="section-2.1-5.1.1"><strong>X509-SVID</strong>: An X.509 certificate that contains a SPIFFE ID in the URI SAN extension. See <span>[<a href="#SPIFFE_X509" class="cite xref">SPIFFE_X509</a>]</span> for details.<a href="#section-2.1-5.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-2.1-5.2">
             <p id="section-2.1-5.2.1"><strong>JWT-SVID</strong>: A JSON Web Token (JWT) that contains a SPIFFE ID in the <code>sub</code> claim. See <span>[<a href="#SPIFFE_JWT" class="cite xref">SPIFFE_JWT</a>]</span> for details.<a href="#section-2.1-5.2.1" class="pilcrow">¶</a></p>
@@ -1369,7 +1369,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-oauth-client-authentication" class="section-name selfRef">OAuth Client Authentication Using SPIFFE</a>
       </h2>
 <p id="section-3-1">This section describes how SPIFFE identity documents can be used for OAuth 2.0 client authentication, following the patterns established in <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span> and, in case of JWT-SVID <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X.509-SVID) to prove its identity.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-2">OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X509-SVID) to prove its identity.<a href="#section-3-2" class="pilcrow">¶</a></p>
 <div id="jwt-svid">
 <section id="section-3.1">
         <h3 id="name-client-authentication-with-">
@@ -1506,10 +1506,10 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
 <div id="x509-svid">
 <section id="section-3.2">
         <h3 id="name-client-authentication-using">
-<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-client-authentication-using" class="section-name selfRef">Client Authentication using X.509-SVID</a>
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-client-authentication-using" class="section-name selfRef">Client Authentication using X509-SVID</a>
         </h3>
-<p id="section-3.2-1">X.509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, with specific adaptations for SPIFFE X.509-SVIDs.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
-<p id="section-3.2-2">To authenticate using an X.509-SVID, the client establishes a mutual TLS connection with the authorization server using its X.509-SVID as the client certificate. The authorization server validates the client certificate as an X.509-SVID and extracts the SPIFFE ID from the URI SAN. The client <span class="bcp14">MUST</span> authenticate the authorization server using standard HTTPS server certificate verification, with the trust anchors it uses for other HTTPS connections.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-1">X509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, with specific adaptations for SPIFFE X509-SVIDs.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">To authenticate using an X509-SVID, the client establishes a mutual TLS connection with the authorization server using its X509-SVID as the client certificate. The authorization server validates the client certificate as an X509-SVID and extracts the SPIFFE ID from the URI SAN. The client <span class="bcp14">MUST</span> authenticate the authorization server using standard HTTPS server certificate verification, with the trust anchors it uses for other HTTPS connections.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
 <p id="section-3.2-3">The request <span class="bcp14">MUST</span> include the <code>client_id</code> parameter identifying the client. The <code>client_id</code> <span class="bcp14">MAY</span> be the SPIFFE ID of the client, or other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID <span class="bcp14">MUST</span> be authorized to authenticate as the client identified by the <code>client_id</code>, as described below.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
 <p id="section-3.2-4">The server validates the client certificates according the following rules<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.2-5">
@@ -1529,7 +1529,7 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
             <p id="section-3.2-5.5.1">Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the <code>client_id</code> parameter of the request. If the <code>client_id</code> is a URL described in <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>, verify that the SPIFFE ID in the URI SAN matches the <code>spiffe_id</code> value in the Client ID Metadata Document as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a>. Otherwise, the SPIFFE ID <span class="bcp14">MUST</span> be associated with the <code>client_id</code> through the client's registration with the authorization server. An authorization server <span class="bcp14">MUST</span> reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the <code>client_id</code>.<a href="#section-3.2-5.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.2-6">Authorization servers <span class="bcp14">MAY</span> issue certificate-bound access tokens as described in Section 3 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> to clients authenticated with an X.509-SVID. Because X.509-SVIDs are typically short-lived, such an access token cannot be used once the client's X.509-SVID has been rotated, and the client needs to obtain a new access token.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-6">Authorization servers <span class="bcp14">MAY</span> issue certificate-bound access tokens as described in Section 3 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> to clients authenticated with an X509-SVID. Because X509-SVIDs are typically short-lived, such an access token cannot be used once the client's X509-SVID has been rotated, and the client needs to obtain a new access token.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
 <div id="x509-svid-example">
 <section id="section-3.2.1">
           <h4 id="name-x509-svid-example">
@@ -1703,7 +1703,7 @@ client_id=spiffe://example.org/my-oauth-client
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-interoperability" class="section-name selfRef">Interoperability</a>
       </h2>
 <p id="section-4-1">In order to achieve interoperability between the authorization server and clients the authorization server <span class="bcp14">MUST</span> advertise what client authentication methods are supported.<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">Authorization servers <span class="bcp14">MUST</span> support at least one of JWT-SVID, X.509-SVID or WIT-SVID. The methods supported <span class="bcp14">MUST</span> be advertised in the authorization servers metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> by including <code>spiffe_jwt</code>, <code>spiffe_wit</code> and/or <code>spiffe_x509</code> in the <code>token_endpoint_auth_methods_supported</code> list. Additionally, the same values should be included in <code>revocation_endpoint_auth_methods_supported</code> and <code>introspection_endpoint_auth_methods_supported</code> when applicable.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-2">Authorization servers <span class="bcp14">MUST</span> support at least one of JWT-SVID, X509-SVID or WIT-SVID. The methods supported <span class="bcp14">MUST</span> be advertised in the authorization servers metadata <span>[<a href="#RFC8414" class="cite xref">RFC8414</a>]</span> by including <code>spiffe_jwt</code>, <code>spiffe_wit</code> and/or <code>spiffe_x509</code> in the <code>token_endpoint_auth_methods_supported</code> list. Additionally, the same values should be included in <code>revocation_endpoint_auth_methods_supported</code> and <code>introspection_endpoint_auth_methods_supported</code> when applicable.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <p id="section-4-3">Clients <span class="bcp14">MUST</span> support at least one of JWT-SVID, X509-SVID or WIT-SVID. To guarantee interoperability a client <span class="bcp14">SHOULD</span> support all.<a href="#section-4-3" class="pilcrow">¶</a></p>
 <p id="section-4-4">It is the responsibility of the client to select the authentication method supported by the authorization server and its deployment.<a href="#section-4-4" class="pilcrow">¶</a></p>
 </section>
@@ -1743,7 +1743,7 @@ client_id=spiffe://example.org/my-oauth-client
       <h2 id="name-spiffe-key-distribution-and">
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-spiffe-key-distribution-and" class="section-name selfRef">SPIFFE Key Distribution and Validation</a>
       </h2>
-<p id="section-6-1">This section describes how an authorization server verifies the signature of an X509 or JWT-SVID. It recommends two SPIFFE-native approaches.<a href="#section-6-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">This section describes how an authorization server verifies the signature of SVIDs. It recommends two SPIFFE-native approaches.<a href="#section-6-1" class="pilcrow">¶</a></p>
 <p id="section-6-2">Trust bundles in general <span class="bcp14">MUST</span> be keyed by the trust domain identifier to prevent mix up between trust domain and their corresponding bundles. The 2 approaches can be used in conjunction, for instance:<a href="#section-6-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6-3">
 <pre>
@@ -1756,7 +1756,7 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
         <h3 id="name-spiffe-bundle-endpoint">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-spiffe-bundle-endpoint" class="section-name selfRef">SPIFFE Bundle Endpoint</a>
         </h3>
-<p id="section-6.1-1">The SPIFFE Bundle Endpoint as defined in Section 4 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">The SPIFFE Bundle Endpoint as defined in Section 4 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> exposes the signing keys for SVIDs over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1-2">SPIFFE Federation <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> defines two endpoint profiles for serving and consuming a bundle endpoint. For interoperability, the authorization server <span class="bcp14">MUST</span> use the <code>https_web</code> profile (Section 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. This specification does not use the <code>https_spiffe</code> profile.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 <p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> manage and refresh trust bundles according to Section 4.1 and 4.2 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
 <p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE ID. A relying party <span class="bcp14">MUST</span> therefore obtain the bundle endpoint through out-of-band configuration and <span class="bcp14">MUST</span> associate it with the name of the trust domain whose bundle it serves. Future profiles may define other means of discovering the bundle endpoint.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
@@ -1765,7 +1765,7 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
           <h4 id="name-example">
 <a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-example" class="section-name selfRef">Example</a>
           </h4>
-<p id="section-6.1.1-1">The following examples showcase how the Authorization Server can perform key discovery for the trust domain <code>example.org</code>. Important to note is the difference between <code>example.org</code> trust domain and <code>example.com</code> location for the SPIFFE Bundle Endpoint. This highlights the importance of explicit configuration and demonstrates why the SPIFFE Bundle Endpoint cannot be derived or discovered from the JWT-SVID, X509-SVID or WIT-SVID without explicit configuration.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-1">The following examples showcase how the Authorization Server can perform key discovery for the trust domain <code>example.org</code>. Important to note is the difference between <code>example.org</code> trust domain and <code>example.com</code> location for the SPIFFE Bundle Endpoint. This highlights the importance of explicit configuration and demonstrates why the SPIFFE Bundle Endpoint cannot be derived or discovered from SVIDs without explicit configuration.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
 <p id="section-6.1.1-2">Example configuration at the OAuth Authorization Server in the JSON format<a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-6.1.1-3">
 <pre>
@@ -1976,7 +1976,7 @@ trust stores configured to validate the client SVID. This could result in an inc
 <a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-replay-of-jwt-svids" class="section-name selfRef">Replay of JWT-SVIDs</a>
         </h3>
 <p id="section-8.1-1"><span>[<a href="#SPIFFE_JWT" class="cite xref">SPIFFE_JWT</a>]</span> permits but does not require a <code>jti</code> claim, and JWT-SVID validators are not required to track <code>jti</code> uniqueness. SPIFFE implementations may also return the same cached JWT-SVID to a workload for multiple requests. Authorization servers therefore cannot in general rely on <code>jti</code>-based replay detection as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. An authorization server may use the <code>jti</code> claim for replay detection where it is present and the deployment does not reuse JWT-SVIDs across requests. An attacker that obtains a JWT-SVID can use it for client authentication until it expires. The audience restriction in step 3 of <a href="#jwt-svid" class="auto internal xref">Section 3.1</a> limits its use to this authorization server.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.1-2">Deployments requiring replay resistance <span class="bcp14">SHOULD</span> either use JWT-SVIDs that carry a unique <code>jti</code> claim and are not reused, with the authorization server rejecting a repeated <code>jti</code>, or use X.509-SVID or WIT-SVID client authentication, which require proof of possession of a private key.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Deployments requiring replay resistance <span class="bcp14">SHOULD</span> either use JWT-SVIDs that carry a unique <code>jti</code> claim and are not reused, with the authorization server rejecting a repeated <code>jti</code>, or use X509-SVID or WIT-SVID client authentication, which require proof of possession of a private key.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iss-claim-security-considerations">
@@ -2210,19 +2210,22 @@ trust stores configured to validate the client SVID. This could result in an inc
           <p id="appendix-A-2.3.1">Require the <code>client_id</code> parameter for JWT-SVID client authentication.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
-          <p id="appendix-A-2.4.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.4.1">Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.5">
-          <p id="appendix-A-2.5.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.5.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.6">
-          <p id="appendix-A-2.6.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.6.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.7">
-          <p id="appendix-A-2.7.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.7.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.8">
-          <p id="appendix-A-2.8.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.8.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.9">
+          <p id="appendix-A-2.9.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.9.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-ietf-oauth-spiffe-client-auth-02">
