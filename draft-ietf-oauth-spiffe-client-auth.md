@@ -145,6 +145,21 @@ This section describes how SPIFFE identity documents can be used for OAuth 2.0 c
 
 OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X509-SVID) to prove its identity.
 
+## Client Identification {#client-identification}
+
+The `client_id` request parameter is OPTIONAL for all client authentication methods defined in this specification.
+
+If the request contains a `client_id` parameter, the authorization server MUST verify that the SPIFFE ID of the presented SVID is authorized to authenticate as the client identified by the `client_id`:
+
+* If the `client_id` is a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}), the SPIFFE ID MUST match the `spiffe_id` value in that document as described in {{client-registration-metadata}}.
+* Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server.
+
+If the request does not contain a `client_id` parameter, the SPIFFE ID of the presented SVID is the client identifier. The authorization server MUST identify the client as the registered client whose `client_id` is equal to that SPIFFE ID. Clients identified by a Client ID Metadata Document MUST include the `client_id` parameter.
+
+In all other cases, the authorization server MUST reject the request with an `invalid_client` error as defined in Section 5.2 of {{RFC6749}}.
+
+A client SHOULD include the `client_id` parameter whenever its client identifier differs from its SPIFFE ID.
+
 ## Client Authentication with JWT-SVIDs {#jwt-svid}
 
 JWT-SVID based authentication follows the JWT Profile for OAuth 2.0 Client Authentication {{RFC7523}}, with specific adaptations for SPIFFE JWT-SVIDs. The requirements of {{RFC7521}} continue to apply.
@@ -155,13 +170,11 @@ To identify the assertion content as a JWT-SVID this specification establishes t
 urn:ietf:params:oauth:client-assertion-type:jwt-spiffe
 ~~~
 
-Based on {{RFC7523}} the following request parameters MUST be present to perform client authentication in the context of this specification:
+Based on {{RFC7523}} the following request parameters are used to perform client authentication in the context of this specification:
 
-* client_id: MUST identify the client. The `client_id` MAY be the SPIFFE ID of the client, but it MAY also be any other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}). In either case, the SPIFFE ID carried in the `sub` claim of the JWT-SVID MUST be authorized to authenticate as the client identified by the `client_id`, as described below.
+* client_id: OPTIONAL. See {{client-identification}}.
 * client_assertion_type: MUST be set to `urn:ietf:params:oauth:client-assertion-type:jwt-spiffe`.
 * client_assertion: MUST be a single SPIFFE JWT-SVID.
-
-Requiring `client_id` makes the client identity explicit in the request, rather than leaving it to be derived from the `sub` claim of the JWT-SVID.
 
 To validate JWT-SVID client authentication requests the authorization server MUST:
 
@@ -169,11 +182,11 @@ To validate JWT-SVID client authentication requests the authorization server MUS
 2. Verify that the JWT has not expired (check the `exp` claim).
 3. Verify that the `aud` claim contains the issuer identifier of the authorization server as its sole value. See {{!I-D.draft-ietf-oauth-rfc7523bis}} for details.
 4. Verify the JWT signature using the signing keys of the trust domains according to {{spiffe-bundle-validation}}.
-5. Verify that the SPIFFE ID in the `sub` claim matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the `sub` claim matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the `client_id` parameter is missing, or if the SPIFFE ID in the `sub` claim is not authorized to authenticate as the client identified by the `client_id`.
+5. Identify the client and verify that the SPIFFE ID in the `sub` claim is authorized to authenticate as that client according to {{client-identification}}.
 
 ### JWT-SVID example
 
-The following examples illustrates an authorization_code request to the token endpoint of an OAuth 2.0 authorization server leveraging a SPIFFE JWT-SVID to authenticate the client.
+The following example illustrates an authorization_code request to the token endpoint of an OAuth 2.0 authorization server leveraging a SPIFFE JWT-SVID to authenticate the client. The client is registered at the authorization server with `client_id` `s6BhdRkqt3` and associated with the SPIFFE ID `spiffe://example.org/my-oauth-client`.
 
 ~~~
 POST /token HTTP/1.1
@@ -182,9 +195,9 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code&
 code=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&
-client_id=spiffe://example.org/my-oauth-client&
+client_id=s6BhdRkqt3&
 client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-spiffe&
-client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U0Sm9Ta1BWIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaHR0cHM6Ly9hcy5leGFtcGxlLmNvbS8iXSwiZXhwIjoxNzQ3MTI0NTQzLCJpYXQiOjE3NDcxMjQyNDMsInN1YiI6InNwaWZmZTovL2V4YW1wbGUub3JnL215LW9hdXRoLWNsaWVudCJ9.Xlv5lW4cbxDsQk4l0paewG4nXOR7MxF_FMn_c27DX45Bxr2HUZf9a6Untfq5S47xpwbw495HBL6_1Lc6TMJxmw
+client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6Ilh0V09KcFB2TGJteHdJekVpVmJaU1B0dVdodmRkdVVWIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaHR0cHM6Ly9hcy5leGFtcGxlLmNvbSJdLCJleHAiOjE3NDcxMjQ1NDMsImlhdCI6MTc0NzEyNDI0Mywic3ViIjoic3BpZmZlOi8vZXhhbXBsZS5vcmcvbXktb2F1dGgtY2xpZW50In0.s_rkqyc6d9j_VcO7sIygVnS7IcnX_8GEwSaIOTj1D3uW3zJho65ubYuSisybtP43GaS7xo29He1n1XtrAZLmEA
 ~~~
 
 For clarity, the SPIFFE-JWT header and body decoded:
@@ -192,12 +205,12 @@ For clarity, the SPIFFE-JWT header and body decoded:
 ~~~
 {
   "alg": "ES256",
-  "kid": "4vC8agycHu6rnkEEJYAH6VuCe4JoSkPV",
+  "kid": "XtWOJpPvLbmxwIzEiVbZSPtuWhvdduUV",
   "typ": "JWT"
 }.
 {
   "aud": [
-    "https://as.example.com/"
+    "https://as.example.com"
   ],
   "exp": 1747124543,
   "iat": 1747124243,
@@ -217,7 +230,7 @@ Content-Type: application/x-www-form-urlencoded
 grant_type=client_credentials&
 client_id=https%3A%2F%2Fexample.org%2Fclient%2Fmetadata.json&
 client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-spiffe&
-client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U0Sm9Ta1BWIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaHR0cHM6Ly9hcy5leGFtcGxlLmNvbS8iXSwiZXhwIjoxNzQ3MTI0NTQzLCJpYXQiOjE3NDcxMjQyNDMsInN1YiI6InNwaWZmZTovL2V4YW1wbGUub3JnL2NsaWVudC8xMjM0In0.Xlv5lW4cbxDsQk4l0paewG4nXOR7MxF_FMn_c27DX45Bxr2HUZf9a6Untfq5S47xpwbw495HBL6_1Lc6TMJxmw
+client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6Ilh0V09KcFB2TGJteHdJekVpVmJaU1B0dVdodmRkdVVWIiwidHlwIjoiSldUIn0.eyJhdWQiOlsiaHR0cHM6Ly9hcy5leGFtcGxlLmNvbSJdLCJleHAiOjE3NDcxMjQ1NDMsImlhdCI6MTc0NzEyNDI0Mywic3ViIjoic3BpZmZlOi8vZXhhbXBsZS5vcmcvY2xpZW50LzEyMzQifQ.kaR5-gkok6OmVTkLj79kpuwmQcuLsG6POiTcKFa-ze2PXQyYhzbnTRevCbMpUG1IR0w_WJfmIFKK2yEF62C5wA
 ~~~
 
 For clarity, the SPIFFE-JWT header and body decoded:
@@ -225,12 +238,12 @@ For clarity, the SPIFFE-JWT header and body decoded:
 ~~~
 {
   "alg": "ES256",
-  "kid": "4vC8agycHu6rnkEEJYAH6VuCe4JoSkPV",
+  "kid": "XtWOJpPvLbmxwIzEiVbZSPtuWhvdduUV",
   "typ": "JWT"
 }.
 {
   "aud": [
-    "https://as.example.com/"
+    "https://as.example.com"
   ],
   "exp": 1747124543,
   "iat": 1747124243,
@@ -258,19 +271,19 @@ To authenticate using an X509-SVID, the client establishes a mutual TLS connecti
 
 The authorization server determines that X509-SVID client authentication applies from the client's registered authentication method (e.g., a `token_endpoint_auth_method` value of `spiffe_x509`), and not from the format of the `client_id` value.
 
-The request MUST include the `client_id` parameter identifying the client. The `client_id` MAY be the SPIFFE ID of the client, or any other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID MUST be authorized to authenticate as the client identified by the `client_id`, according to the validation rules below.
+The `client_id` parameter is OPTIONAL. This deviates from Section 2 of {{RFC8705}}, which requires the `client_id` parameter for mutual-TLS client authentication. Because the X509-SVID carries exactly one SPIFFE ID in its URI SAN, the client can be identified from the certificate without ambiguity. See {{client-identification}}.
 
 The authorization server validates the client certificate according to the following rules:
 
 1. Validate the certificate as an X509-SVID according to {{SPIFFE_X509}}.
 2. Path validation MUST use only the trust anchors for the trust domain of the SPIFFE ID in the certificate's URI SAN, obtained as described in {{spiffe-bundle-validation}}. Other trust anchors, including those of other trust domains or the system trust store, MUST NOT be used.
-3. Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the URI SAN matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the `client_id`.
+3. Identify the client and verify that the SPIFFE ID in the URI SAN is authorized to authenticate as that client according to {{client-identification}}.
 
 Authorization servers MAY issue certificate-bound access tokens as described in Section 3 of {{RFC8705}} to clients authenticated with an X509-SVID. Because X509-SVIDs are typically short-lived, such an access token cannot be used once the client's X509-SVID has been rotated, and the client needs to obtain a new access token.
 
 ### X509-SVID Example
 
-The following request uses a refresh token to obtain a new access token. The client is `spiffe://example.org/my-oauth-client` and is authenticated by performing this request over a mutual TLS connection.
+The following request uses a refresh token to obtain a new access token. The client is `s6BhdRkqt3`, associated with the SPIFFE ID `spiffe://example.org/my-oauth-client`, and is authenticated by performing this request over a mutual TLS connection.
 
 ~~~
 POST /token HTTP/1.1
@@ -279,7 +292,7 @@ Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token&
 refresh_token=tGzv3JOkF0XG5Qx2TlKWIA&
-client_id=spiffe://example.org/my-oauth-client
+client_id=s6BhdRkqt3
 ~~~
 
 For clarity, the presented X509-SVID client certificate to the server decoded via `openssl x509 -text` is:
@@ -289,43 +302,45 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            dd:48:ec:d4:a4:c6:b2:ea:8e:9b:54:35:e8:30:65:7b
+            5c:2d:a8:f3:d0:c0:1a:50:19:8b:1a:f8:ee:0c:c1:58:fa:a7:ea:87
         Signature Algorithm: ecdsa-with-SHA256
-        Issuer: C=US, O=SPIFFE, serialNumber=6968729192859147614695638370388029008
+        Issuer: C = US, O = SPIFFE
         Validity
             Not Before: May 16 11:26:11 2025 GMT
             Not After : May 16 12:26:21 2025 GMT
-        Subject: C=US, O=SPIRE
+        Subject: C = US, O = SPIRE
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (256 bit)
                 pub:
-                    04:c2:0b:b6:8e:47:9a:20:ab:33:f1:a9:a5:77:97:
-                    fa:a0:95:7d:2c:9f:e9:94:3d:e9:ed:e6:35:52:7f:
-                    ff:82:34:74:20:97:5a:1b:4e:87:5f:32:3e:9d:da:
-                    60:6a:05:8b:86:9d:0b:59:5f:67:be:93:3b:26:de:
-                    ea:1e:18:98:96
+                    04:99:0e:83:13:cf:95:7c:9c:07:ed:b2:72:8f:c3:
+                    57:4c:b0:3b:87:ca:3d:5c:ea:1c:96:68:84:79:c2:
+                    8a:e1:d9:36:fd:c6:90:16:ea:57:a7:e8:4b:15:89:
+                    d0:67:64:5d:03:11:1f:70:22:0a:5f:8d:58:57:b5:
+                    8a:6d:54:ee:4f
                 ASN1 OID: prime256v1
                 NIST CURVE: P-256
         X509v3 extensions:
             X509v3 Key Usage: critical
-                Digital Signature, Key Encipherment, Key Agreement
+                Digital Signature
             X509v3 Extended Key Usage:
                 TLS Web Server Authentication, TLS Web Client Authentication
             X509v3 Basic Constraints: critical
                 CA:FALSE
             X509v3 Subject Key Identifier:
-                D8:7A:2F:8B:E3:CF:08:83:EA:DD:5E:0A:59:33:6E:4C:E0:CC:6B:AD
+                70:A5:DB:B1:87:84:F3:27:4B:04:F6:8B:6D:4B:4B:94:58:67:B3:C8
             X509v3 Authority Key Identifier:
-                C2:41:49:B0:ED:E0:94:7B:FA:7D:C2:F1:02:24:20:B9:1E:3D:56:FA
+                ED:6C:D4:A4:E1:D1:48:23:A0:5C:4C:BD:92:3C:26:BD:4B:1C:26:1B
             X509v3 Subject Alternative Name:
                 URI:spiffe://example.org/my-oauth-client
     Signature Algorithm: ecdsa-with-SHA256
     Signature Value:
-        30:44:02:20:48:c3:5f:68:b2:c5:5d:96:c4:96:32:37:1f:af:
-        b8:1c:1c:45:ad:41:26:dd:e2:92:b5:73:62:83:34:c6:16:2a:
-        02:20:0f:48:02:8e:6b:1d:09:01:80:d8:85:2b:ca:25:c6:2c:
-        9e:f2:27:c2:3c:e4:03:58:a8:47:21:f6:3c:5e:7a:c8
+        30:65:02:30:03:51:e7:af:3a:d2:49:a2:1b:e1:f8:ef:12:83:
+        91:13:df:b1:c4:d3:57:f5:12:74:0a:6e:3f:1f:b4:57:8b:35:
+        16:a1:36:46:cd:f5:db:dc:62:73:38:b5:da:14:9c:50:02:31:
+        00:e7:db:76:c8:23:78:28:ab:36:f6:c4:48:81:f6:4e:83:a4:
+        07:2a:57:fa:62:87:ae:8f:3d:0d:ef:4e:ff:4a:90:74:50:c6:
+        16:2f:78:9b:fd:13:8e:c5:14:c0:c8:1d:15
 ~~~
 
 ## Client Authentication with WIT-SVIDs {#wit-svid}
@@ -334,23 +349,28 @@ A WIT-SVID is a WIMSE Workload Identity Token (WIT) as defined in {{?I-D.draft-i
 
 A WIT-SVID as issued by a SPIFFE implementation binds a key pair held by the client via the `cnf` claim. The key pair bound to the WIT-SVID is used to generate an attestation proof during client authentication. The attestation proof is in the form of a "Client Attestation PoP JWT" as defined in {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} that is issued by the client and signed with the private part of the key pair bound in the WIT-SVID.
 
-The WIT-SVID and the corresponding Client Attestation PoP JWT are sent together to the authorization server as a means of client authentication using the HTTP header-based syntax defined in Section 6.1 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+The WIT-SVID and the corresponding Client Attestation PoP JWT are sent together to the authorization server as a means of client authentication using the HTTP header-based syntax defined in Section 5.1 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+
+The `client_id` parameter is OPTIONAL. See {{client-identification}}.
 
 ### Authorization Server Validation {#wit-svid-validation}
+
+This specification is a profile of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} as described in Section 13 of that document. The authorization server determines that this profile applies when the `typ` JWT header parameter of the `OAuth-Client-Attestation` header is `wit+jwt`.
 
 To validate a WIT-SVID client authentication request, the authorization server MUST apply the following rules:
 
 * The authorization server MUST accept `wit+jwt` as a valid value of the `typ` JWT header parameter in the `OAuth-Client-Attestation` header, in addition to `oauth-client-attestation+jwt`.
-* The WIT-SVID MUST be validated as a Workload Identity Token according to Section 3.1 of {{?I-D.draft-ietf-wimse-workload-creds}}.
+* The WIT-SVID MUST be validated as a Workload Identity Token according to Section 5.1.3 of {{?I-D.draft-ietf-wimse-workload-creds}}.
 * The WIT-SVID signature MUST be verified using the signing keys of the trust domain according to {{spiffe-bundle-validation}}.
-* The Client Attestation PoP JWT MUST be validated according to Section 5.2 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+* The Client Attestation PoP JWT MUST be validated according to Section 7.2 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
+* The client MUST be identified and the SPIFFE ID in the `sub` claim MUST be verified according to {{client-identification}}. This replaces the `client_id` to `sub` matching rule of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
 
 The authorization server advertises support for WIT-SVID client authentication using the `spiffe_wit` value as described in {{interoperability}}. The `attest_jwt_client_auth` value defined in {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} indicates support for Client Attestation JWTs in general and does not by itself indicate support for WIT-SVIDs.
 
 
 ### WIT-SVID Example
 
-The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication.
+The following example illustrates a token request using a WIT-SVID and a Client Attestation PoP JWT for client authentication. The client is registered at the authorization server with `client_id` `s6BhdRkqt3` and associated with the SPIFFE ID `spiffe://example.org/my-oauth-client`.
 
 The WIT-SVID (OAuth-Client-Attestation) header and body decoded:
 
@@ -358,7 +378,7 @@ The WIT-SVID (OAuth-Client-Attestation) header and body decoded:
 {
   "typ": "wit+jwt",
   "alg": "ES256",
-  "kid": "4vC8agycHu6rnkEEJYAH6VuCe4JoSkPV"
+  "kid": "yiBgUXz7bH57y84n4G-6dzvNchf6XLpT"
 }.
 {
   "iss": "spiffe://example.org/my-spiffe-workload-api",
@@ -368,9 +388,10 @@ The WIT-SVID (OAuth-Client-Attestation) header and body decoded:
   "cnf": {
     "jwk": {
       "kty": "EC",
+      "alg": "ES256",
       "crv": "P-256",
-      "x": "18wHLeIgW9wVN6VD1Txgpqy2LszYkMf6J8njVAibvhM",
-      "y": "-V4dS4UaLMgP_4fY4j8ir7cl1TXlFdAgcx55o7TkcSA"
+      "x": "bVtfeeqioPItPfBpVgPdG1LPmAgGTMhUHV6IK9olqDE",
+      "y": "vLXTrclqzyq7BDaL471iew6o7B-mwoE6T9zUC4ZeDgA"
     }
   }
 }
@@ -397,12 +418,12 @@ The token endpoint request:
 POST /token HTTP/1.1
 Host: as.example.com
 Content-Type: application/x-www-form-urlencoded
-OAuth-Client-Attestation: eyJ0eXAiOiJ3aXQrand0IiwiYWxnIjoiRVMyNTYiL...
-OAuth-Client-Attestation-PoP: eyJhbGciOiJFUzI1NiIsInR5cCI6Im9hdXRoLWN...
+OAuth-Client-Attestation: eyJ0eXAiOiJ3aXQrand0IiwiYWxnIjoiRVMyNTYi...
+OAuth-Client-Attestation-PoP: eyJ0eXAiOiJvYXV0aC1jbGllbnQtYXR0ZXN0YXRp...
 
 grant_type=authorization_code&
 code=n0esc3NRze7LTCu7iYzS6a5acc3f0ogp4&
-client_id=spiffe://example.org/my-oauth-client
+client_id=s6BhdRkqt3
 ~~~
 
 # Interoperability {#interoperability}
@@ -499,27 +520,27 @@ Host: example.com
       "use": "x509-svid",
       "kty": "EC",
       "crv": "P-384",
-      "x": "9XBzty8W_ex4Xr0RdzUBgie_okdaUTheSF0PQvVAaTsXaP1J7yv0Dhlaw45I7Cv9",
-      "y": "HP21HOmMxIlZ0XeqsOl9sM5H57HBQWu0bINXfw4jdeHdB5vk1XyNyBQQxeUpSxhn",
+      "x": "gzFU0pSlTB_CetVsgffq1hULPiiBgwwQcfSXx1v5dQZufpw60d0kfOzfjj2aFSTF",
+      "y": "rhkqYZjNiaMhc90R-7VUGDLlJhwQIF3RKsr9ByHyKs1x-ps7kgMNIvXfXijIe17u",
       "x5c": [
-        "MIIB2DCCAV6gAwIBAgIURJ20yIzal3ZT9NXkdwrsm0selwwwCgYIKoZIzj0EAwQwHjELMAkGA1UEBhMCVVMxDzANBgNVBAoMBlNQSUZGRTAeFw0yMzA1MTUwMjA1MDZaFw0yODA1MTMwMjA1MDZaMB4xCzAJBgNVBAYTAlVTMQ8wDQYDVQQKDAZTUElGRkUwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAAT1cHO3Lxb97HhevRF3NQGCJ7+iR1pROF5IXQ9C9UBpOxdo/UnvK/QOGVrDjkjsK/0c/bUc6YzEiVnRd6qw6X2wzkfnscFBa7Rsg1d/DiN14d0Hm+TVfI3IFBDF5SlLGGejXTBbMB0GA1UdDgQWBBSSiuNgxqqnz2r/jRcWsARqphwQ/zAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAZBgNVHREEEjAQhg5zcGlmZmU6Ly9sb2NhbDAKBggqhkjOPQQDBANoADBlAjEA54Q8hfhEd4qVycwbLNzOm/HQrp1n1+a2xc88iU036FMPancR1PLqgsODPfWyttdRAjAKIodUi4eYiMa9+I2rVbj8gOxJAFn0hLLEF3QDmXtGPpARs9qC+KbiklTu5Fpik2Q="
+        "MIIB3jCCAWSgAwIBAgIUTjjnWi5B964Eds55GkVbRy5o1twwCgYIKoZIzj0EAwQwHjELMAkGA1UEBhMCVVMxDzANBgNVBAoMBlNQSUZGRTAeFw0yNTA1MTYxMTIzMTlaFw0zMDA1MTUxMTIzMTlaMB4xCzAJBgNVBAYTAlVTMQ8wDQYDVQQKDAZTUElGRkUwdjAQBgcqhkjOPQIBBgUrgQQAIgNiAASDMVTSlKVMH8J61WyB9+rWFQs+KIGDDBBx9JfHW/l1Bm5+nDrR3SR87N+OPZoVJMWuGSphmM2JoyFz3RH7tVQYMuUmHBAgXdEqyv0HIfIqzXH6mzuSAw0i9d9eKMh7Xu6jYzBhMB0GA1UdDgQWBBTtbNSk4dFII6BcTL2SPCa9SxwmGzAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAfBgNVHREEGDAWhhRzcGlmZmU6Ly9leGFtcGxlLm9yZzAKBggqhkjOPQQDBANoADBlAjEAwMN6eWvh1Z9k+a1Ne1eSev/U/9pK8iwNI8hNyUV9elJ/Wmtb93LySjicrojqADfKAjBXFOBL7W5XjnonRK1XE0nFFiH6Wz/rqr3pAXyeh2dUSrWFfuNeOtOb3jBASgylWvE="
       ]
     },
     {
       "use": "jwt-svid",
       "kty": "EC",
-      "kid": "6d02Vc2oU62mXVH5nlggHGLmfIhrlnNW",
+      "kid": "XtWOJpPvLbmxwIzEiVbZSPtuWhvdduUV",
       "crv": "P-256",
-      "x": "S2V42XlFjNp30CFmOidbWQT9IpZHqJ8JuuJgDBvkdZA",
-      "y": "vN0y5TK36VRxZo_E3Gc7S5c0jIRIaHZ53f2UiJ1NFto"
+      "x": "aZUP_XQ-NxoG9qS-Vv1rbHWFaKVfwhE7esdhA-MH7YQ",
+      "y": "kfUWpboWvnNVSBdtzhKpWQI_ekDhV41lFabw7BXMUSE"
     },
     {
       "use": "wit-svid",
       "kty": "EC",
-      "kid": "b7f3K2oPz8nQvT1xYl9gHGLmfIhrlnXY",
+      "kid": "yiBgUXz7bH57y84n4G-6dzvNchf6XLpT",
       "crv": "P-256",
-      "x": "18wHLeIgW9wVN6VD1Txgpqy2LszYkMf6J8njVAibvhM",
-      "y": "-V4dS4UaLMgP_4fY4j8ir7cl1TXlFdAgcx55o7TkcSA"
+      "x": "mJhib8xua3b7vdwjnD88xeIscm5w8nODtrKi7P2J-Nw",
+      "y": "2I1ELva5_fIgVP3eP8f2Zl7SM3Tky8Bkkmo1YJNH-RI"
     }
   ],
   "spiffe_sequence": 10,
@@ -536,29 +557,29 @@ Certificate:
     Data:
         Version: 3 (0x2)
         Serial Number:
-            5c:4b:d5:2d:f9:c1:6e:78:2c:32:a6:bb:6c:73:f0:b8:f4:be:13:09
+            4e:38:e7:5a:2e:41:f7:ae:04:76:ce:79:1a:45:5b:47:2e:68:d6:dc
         Signature Algorithm: ecdsa-with-SHA512
-        Issuer: C=US, O=SPIFFE
+        Issuer: C = US, O = SPIFFE
         Validity
             Not Before: May 16 11:23:19 2025 GMT
             Not After : May 15 11:23:19 2030 GMT
-        Subject: C=US, O=SPIFFE
+        Subject: C = US, O = SPIFFE
         Subject Public Key Info:
             Public Key Algorithm: id-ecPublicKey
                 Public-Key: (384 bit)
                 pub:
-                    04:ef:3f:db:67:2b:e8:5c:a1:64:23:e7:f2:fd:f0:
-                    3b:16:55:68:17:55:17:d4:bd:cd:6d:04:fd:cc:8f:
-                    99:31:f7:8c:ac:b0:1e:31:60:18:45:32:8b:a1:17:
-                    4b:2f:01:75:27:6c:3f:c3:a5:b9:da:56:fb:29:54:
-                    63:cb:08:96:81:35:0e:96:04:03:40:fe:51:0d:26:
-                    da:d5:99:6c:8f:c2:45:43:cb:2c:b4:8d:9b:68:78:
-                    9f:c0:2d:68:36:b8:5e
+                    04:83:31:54:d2:94:a5:4c:1f:c2:7a:d5:6c:81:f7:
+                    ea:d6:15:0b:3e:28:81:83:0c:10:71:f4:97:c7:5b:
+                    f9:75:06:6e:7e:9c:3a:d1:dd:24:7c:ec:df:8e:3d:
+                    9a:15:24:c5:ae:19:2a:61:98:cd:89:a3:21:73:dd:
+                    11:fb:b5:54:18:32:e5:26:1c:10:20:5d:d1:2a:ca:
+                    fd:07:21:f2:2a:cd:71:fa:9b:3b:92:03:0d:22:f5:
+                    df:5e:28:c8:7b:5e:ee
                 ASN1 OID: secp384r1
                 NIST CURVE: P-384
         X509v3 extensions:
             X509v3 Subject Key Identifier:
-                8D:79:D2:26:5E:4C:83:30:40:C7:E9:1D:E1:35:12:F6:60:CF:0B:DB
+                ED:6C:D4:A4:E1:D1:48:23:A0:5C:4C:BD:92:3C:26:BD:4B:1C:26:1B
             X509v3 Basic Constraints: critical
                 CA:TRUE
             X509v3 Key Usage: critical
@@ -567,15 +588,13 @@ Certificate:
                 URI:spiffe://example.org
     Signature Algorithm: ecdsa-with-SHA512
     Signature Value:
-        30:64:02:30:0a:e9:fd:d4:cd:99:52:90:cb:14:86:93:4e:f8:
-        02:52:d6:17:12:9f:2e:65:99:0e:38:b6:b9:a6:fe:43:0f:60:
-        30:04:87:ec:24:20:80:a4:75:ee:3c:ad:9d:a2:72:0d:02:30:
-        55:93:0e:14:8c:47:47:3b:74:7c:a7:2a:2a:96:1d:a4:85:46:
-        4f:3f:95:a4:c2:ab:3c:2e:04:b3:1b:cf:02:0f:33:fc:dd:dc:
-        d5:2f:44:c8:2a:dc:ce:3f:c5:c6:89:d0
+        30:65:02:31:00:c0:c3:7a:79:6b:e1:d5:9f:64:f9:ad:4d:7b:
+        57:92:7a:ff:d4:ff:da:4a:f2:2c:0d:23:c8:4d:c9:45:7d:7a:
+        52:7f:5a:6b:5b:f7:72:f2:4a:38:9c:ae:88:ea:00:37:ca:02:
+        30:57:14:e0:4b:ed:6e:57:8e:7a:27:44:ad:57:13:49:c5:16:
+        21:fa:5b:3f:eb:aa:bd:e9:01:7c:9e:87:67:54:4a:b5:85:7e:
+        e3:5e:3a:d3:9b:de:30:40:4a:0c:a5:5a:f1
 ~~~
-
-> TODO: Bundle doesn't match X509-SVID. This needs to be fixed.
 
 ## Alternative methods to avoid
 
@@ -704,8 +723,8 @@ This document requests the following entries in the "OAuth Token Endpoint Authen
 
   - latest
 
-* Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
-* Require the `client_id` parameter for JWT-SVID client authentication.
+* Make the `client_id` parameter optional for all client authentication methods and define unified client identification rules.
+* Regenerate the examples for consistency (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/50)
 * Describe the trust model and mitigations for obtaining trust bundles from Client ID Metadata Documents (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55)
 * Fixed Nits (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/67)
 * Reference X509-SVID validation rules instead of restating them (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52)
