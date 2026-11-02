@@ -134,7 +134,6 @@ This specification uses the terms defined in OAuth 2.0 {{RFC6749}}, the Assertio
 - **JWT-SVID**: A JSON Web Token (JWT) that contains a SPIFFE ID in the `sub` claim. See {{SPIFFE_JWT}} for details.
 
 - **WIT-SVID**: A WIMSE Workload Identity Token (WIT) that contains a SPIFFE ID in the `sub` claim. See {{SPIFFE_WIT}} for details.
-  
 **SPIFFE Bundle**: A collection of public keys and associated metadata that allow validation of SVIDs issued by a trust domain.
 
 **SPIFFE Bundle Endpoint**: A URL that serves a SPIFFE bundle for a trust domain.
