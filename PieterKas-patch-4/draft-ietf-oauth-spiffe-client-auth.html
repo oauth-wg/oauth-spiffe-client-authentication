@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Schwenkschuster, et al.</td>
-<td class="center">Expires 5 May 2027</td>
+<td class="center">Expires 6 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-oauth-spiffe-client-auth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-01" class="published">1 November 2026</time>
+<time datetime="2026-11-02" class="published">2 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-05">5 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-06">6 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1135,7 +1135,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1749,11 +1749,10 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
         <h3 id="name-spiffe-bundle-endpoint">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-spiffe-bundle-endpoint" class="section-name selfRef">SPIFFE Bundle Endpoint</a>
         </h3>
-<p id="section-6.1-1">The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Server authentication on this endpoint is available in two flavors. For the sake of interoperability, in the context of this specification the WebPKI flavor <span class="bcp14">MUST</span> be used. This effectively means that the server certificate of the bundle endpoint is trusted by the authorization server accessing it. See Sec 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">SPIFFE Federation <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> defines two endpoint profiles for authenticating a bundle endpoint. For interoperability, the authorization server <span class="bcp14">MUST</span> use the <code>https_web</code> profile (Section 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. The <code>https_spiffe</code> profile (Section 5.2.2 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>), in which the endpoint presents an X.509-SVID, requires the authorization server to be configured in advance with the SPIFFE ID of the bundle endpoint and a means of obtaining the bundle for the endpoint's trust domain, such as an operator-supplied initial bundle. This specification does not use the <code>https_spiffe</code> profile.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">The authorization server <span class="bcp14">SHOULD</span> periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
-<p id="section-6.1-5">The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and <span class="bcp14">MUST</span> be configured manually out of band. Bundle endpoints <span class="bcp14">MUST</span> be keyed by the trust domain identifier.<a href="#section-6.1-5" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">The SPIFFE Bundle Endpoint as defined in Section 4 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">SPIFFE Federation <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> defines two endpoint profiles for serving and consuming a bundle endpoint. For interoperability, the authorization server <span class="bcp14">MUST</span> use the <code>https_web</code> profile (Section 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. This specification does not use the <code>https_spiffe</code> profile.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> manage and refresh trust bundles according to Section 4.1 and 4.2 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE ID. A relying party <span class="bcp14">MUST</span> therefore obtain the bundle endpoint through out-of-band configuration and <span class="bcp14">MUST</span> associate it with the name of the trust domain whose bundle it serves. Future profiles may define other means of discovering the bundle endpoint.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
 <div id="example">
 <section id="section-6.1.1">
           <h4 id="name-example">
