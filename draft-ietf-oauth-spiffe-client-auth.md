@@ -136,7 +136,7 @@ This section describes how SPIFFE identity documents can be used for OAuth 2.0 c
 
 OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X.509-SVID) to prove its identity.
 
-## Client Authentication with JWT-SVIDs
+## Client Authentication with JWT-SVIDs {#jwt-svid}
 
 JWT-SVID based authentication naturally follows the JWT Profile for OAuth 2.0 Client Authentication {{RFC7523}}, with specific adaptations for SPIFFE JWT-SVIDs. {{RFC7521}} remains valid.
 
@@ -604,6 +604,12 @@ Client authentication using X509-SVIDs has the same security considerations as d
 The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.
 
+## Replay of JWT-SVIDs
+
+{{SPIFFE_JWT}} permits but does not require a `jti` claim, and JWT-SVID validators are not required to track `jti` uniqueness. SPIFFE implementations may also return the same cached JWT-SVID to a workload for multiple requests. Authorization servers therefore cannot in general rely on `jti`-based replay detection as described in {{RFC7523}}. An authorization server may use the `jti` claim for replay detection where it is present and the deployment does not reuse JWT-SVIDs across requests. An attacker that obtains a JWT-SVID can use it for client authentication until it expires. The audience restriction in step 3 of {{jwt-svid}} limits its use to this authorization server.
+
+Deployments requiring replay resistance SHOULD either use JWT-SVIDs that carry a unique `jti` claim and are not reused, with the authorization server rejecting a repeated `jti`, or use X.509-SVID or WIT-SVID client authentication, which require proof of possession of a private key.
+
 ## JWT-SVID and WIT-SVID iss claim {#iss-claim-security-considerations}
 
 As described in {{svid-iss-claim}}, `iss`-based key discovery is not a general alternative to the SPIFFE Bundle Endpoint and SHOULD be avoided.
@@ -644,6 +650,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)
 * Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)
 
 ## draft-ietf-oauth-spiffe-client-auth-02
