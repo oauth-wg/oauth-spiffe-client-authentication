@@ -5,13 +5,13 @@
 Web Authorization Protocol                            A. Schwenkschuster
 Internet-Draft                                             P. Kasselmann
 Intended status: Standards Track                        Defakto Security
-Expires: 5 May 2027                                              S. Rose
+Expires: 6 May 2027                                              S. Rose
                                                                     NIST
                                                            S. Thorgersen
                                                                      IBM
                                                            N. Cam-Winget
                                                            Cisco Systems
-                                                         1 November 2026
+                                                         2 November 2026
 
 
                    OAuth SPIFFE Client Authentication
@@ -64,7 +64,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 May 2027.
+   This Internet-Draft will expire on 6 May 2027.
 
 Copyright Notice
 
@@ -107,7 +107,7 @@ Table of Contents
        6.2.4.  Using the JWT-SVID or WIT-SVID iss claim
    7.  Implementation Status
    8.  Security Considerations
-     8.1.  Authorization Server Certificate
+     8.1.  Authorization Server Authentication in Mutual TLS
      8.2.  JWT-SVID and WIT-SVID iss claim
    9.  IANA Considerations
      9.1.  OAuth Dynamic Client Registration Metadata
@@ -885,15 +885,17 @@ Certificate:
    certificate that can be validated by one of the misconfigured trust
    anchors in the trust store.
 
-8.1.  Authorization Server Certificate
+8.1.  Authorization Server Authentication in Mutual TLS
 
    Mutual TLS does not require the client and the authorization server
-   to use certificates from the same PKI.  When a client authenticates
-   using an X.509-SVID, the authorization server MAY present a WebPKI
-   certificate, issued by a certificate authority that the client trusts
-   for HTTPS and valid for the host in the authorization server's
-   endpoint URL.  The authorization server is not required to present an
-   X.509-SVID.
+   to use certificates from the same PKI.  Because the client
+   authenticates the authorization server using its regular HTTPS trust
+   anchors (see Section 3.2), the authorization server presents a
+   certificate from a PKI the client trusts for HTTPS, such as a WebPKI
+   certificate valid for the host in the authorization server’s endpoint
+   URL.  The authorization server does not present an X.509-SVID, and
+   the client does not need the SPIFFE trust bundle of any trust domain
+   to authenticate the authorization server.
 
 8.2.  JWT-SVID and WIT-SVID iss claim
 

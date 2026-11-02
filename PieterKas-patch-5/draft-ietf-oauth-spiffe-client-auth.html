@@ -1052,7 +1052,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Schwenkschuster, et al.</td>
-<td class="center">Expires 5 May 2027</td>
+<td class="center">Expires 6 May 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1065,12 +1065,12 @@ svg {
 <dd class="internet-draft">draft-ietf-oauth-spiffe-client-auth-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-11-01" class="published">1 November 2026</time>
+<time datetime="2026-11-02" class="published">2 November 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-05-05">5 May 2027</time></dd>
+<dd class="expires"><time datetime="2027-05-06">6 May 2027</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1135,7 +1135,7 @@ svg {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 5 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 May 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1258,7 +1258,7 @@ svg {
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-authorization-server-certif" class="internal xref">Authorization Server Certificate</a></p>
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-authorization-server-authen" class="internal xref">Authorization Server Authentication in Mutual TLS</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-jwt-svid-and-wit-svid-iss-c" class="internal xref">JWT-SVID and WIT-SVID iss claim</a></p>
@@ -1966,12 +1966,12 @@ This section records the status of known implementations of the protocol defined
 <p id="section-8-3">Client authentication using X509-SVIDs has the same security considerations as described in <span>[<a href="#I-D.draft-ietf-wimse-workload-creds" class="cite xref">I-D.draft-ietf-wimse-workload-creds</a>]</span> and <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span><a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<div id="authorization-server-certificate">
+<div id="authorization-server-authentication-in-mutual-tls">
 <section id="section-8.1">
-        <h3 id="name-authorization-server-certif">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-authorization-server-certif" class="section-name selfRef">Authorization Server Certificate</a>
+        <h3 id="name-authorization-server-authen">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-authorization-server-authen" class="section-name selfRef">Authorization Server Authentication in Mutual TLS</a>
         </h3>
-<p id="section-8.1-1">Mutual TLS does not require the client and the authorization server to use certificates from the same PKI. When a client authenticates using an X.509-SVID, the authorization server <span class="bcp14">MAY</span> present a WebPKI certificate, issued by a certificate authority that the client trusts for HTTPS and valid for the host in the authorization server's endpoint URL. The authorization server is not required to present an X.509-SVID.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-1">Mutual TLS does not require the client and the authorization server to use certificates from the same PKI. Because the client authenticates the authorization server using its regular HTTPS trust anchors (see Section 3.2), the authorization server presents a certificate from a PKI the client trusts for HTTPS, such as a WebPKI certificate valid for the host in the authorization server’s endpoint URL. The authorization server does not present an X.509-SVID, and the client does not need the SPIFFE trust bundle of any trust domain to authenticate the authorization server.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iss-claim-security-considerations">
