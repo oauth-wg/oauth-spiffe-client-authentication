@@ -354,8 +354,9 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
    TLS connection with the authorization server using its X.509-SVID as
    the client certificate.  The authorization server validates the
    client certificate as an X.509-SVID and extracts the SPIFFE ID from
-   the URI SAN.  The server certificate MUST be validated by the client
-   using its system trust store, and NOT the SPIFFE trust bundle.
+   the URI SAN.  The client MUST authenticate the authorization server
+   using standard HTTPS server certificate verification, with the trust
+   anchors it uses for other HTTPS connections.
 
    The request MUST include the client_id parameter identifying the
    client.  The client_id MAY be the SPIFFE ID of the client, or other
@@ -1113,6 +1114,8 @@ Appendix A.  Document History
 
    *  Require the client_id parameter for JWT-SVID client
       authentication.
+
+   *  Clarify Authorization Server Authentication when using mutual TLS.
 
    *  Clarify use of https_web and https_spiffe profiles
       (https://github.com/oauth-wg/oauth-spiffe-client-authentication/
