@@ -359,14 +359,19 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
    using standard HTTPS server certificate verification, with the trust
    anchors it uses for other HTTPS connections.
 
+   The authorization server determines that X509-SVID client
+   authentication applies from the client's registered authentication
+   method (e.g., a token_endpoint_auth_method value of spiffe_x509), and
+   not from the format of the client_id value.
+
    The request MUST include the client_id parameter identifying the
-   client.  The client_id MAY be the SPIFFE ID of the client, or other
-   client identifier recognized by the authorization server, such as a
-   URL pointing to a Client ID Metadata Document
+   client.  The client_id MAY be the SPIFFE ID of the client, or any
+   other client identifier recognized by the authorization server, such
+   as a URL pointing to a Client ID Metadata Document
    ([I-D.ietf-oauth-client-id-metadata-document]).  In either case, the
    SPIFFE ID carried in the URI SAN of the presented X509-SVID MUST be
    authorized to authenticate as the client identified by the client_id,
-   as described below.
+   according to the validation rules below.
 
    The server validates the client certificates according the following
    rules
@@ -1137,6 +1142,11 @@ Appendix A.  Document History
 
    *  Require the client_id parameter for JWT-SVID client
       authentication.
+
+   *  Clarify that the authorization server selects X509-SVID client
+      authentication from the client's registered authentication method
+      (see https://github.com/oauth-wg/oauth-spiffe-client-
+      authentication/issues/31)
 
    *  Align terminology with SPIFFE (see https://github.com/oauth-wg/
       oauth-spiffe-client-authentication/issues/45)

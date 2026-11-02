@@ -1510,26 +1510,27 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
         </h3>
 <p id="section-3.2-1">X509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, with specific adaptations for SPIFFE X509-SVIDs.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.2-2">To authenticate using an X509-SVID, the client establishes a mutual TLS connection with the authorization server using its X509-SVID as the client certificate. The authorization server validates the client certificate as an X509-SVID and extracts the SPIFFE ID from the URI SAN. The client <span class="bcp14">MUST</span> authenticate the authorization server using standard HTTPS server certificate verification, with the trust anchors it uses for other HTTPS connections.<a href="#section-3.2-2" class="pilcrow">¶</a></p>
-<p id="section-3.2-3">The request <span class="bcp14">MUST</span> include the <code>client_id</code> parameter identifying the client. The <code>client_id</code> <span class="bcp14">MAY</span> be the SPIFFE ID of the client, or other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID <span class="bcp14">MUST</span> be authorized to authenticate as the client identified by the <code>client_id</code>, as described below.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
-<p id="section-3.2-4">The server validates the client certificates according the following rules<a href="#section-3.2-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="section-3.2-5">
-<li id="section-3.2-5.1">
-            <p id="section-3.2-5.1.1">Perform standard X.509 path validation against the trust anchors according to <a href="#spiffe-bundle-validation" class="auto internal xref">Section 6</a>.<a href="#section-3.2-5.1.1" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">The authorization server determines that X509-SVID client authentication applies from the client's registered authentication method (e.g., a <code>token_endpoint_auth_method</code> value of <code>spiffe_x509</code>), and not from the format of the <code>client_id</code> value.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">The request <span class="bcp14">MUST</span> include the <code>client_id</code> parameter identifying the client. The <code>client_id</code> <span class="bcp14">MAY</span> be the SPIFFE ID of the client, or any other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document (<span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID <span class="bcp14">MUST</span> be authorized to authenticate as the client identified by the <code>client_id</code>, according to the validation rules below.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-5">The server validates the client certificates according the following rules<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.2-6">
+<li id="section-3.2-6.1">
+            <p id="section-3.2-6.1.1">Perform standard X.509 path validation against the trust anchors according to <a href="#spiffe-bundle-validation" class="auto internal xref">Section 6</a>.<a href="#section-3.2-6.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-5.2">
-            <p id="section-3.2-5.2.1">Verify that the certificate contains exactly one URI SAN with a valid SPIFFE ID.<a href="#section-3.2-5.2.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-6.2">
+            <p id="section-3.2-6.2.1">Verify that the certificate contains exactly one URI SAN with a valid SPIFFE ID.<a href="#section-3.2-6.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-5.3">
-            <p id="section-3.2-5.3.1">Verify that the certificate is a leaf certificate (Basic Constraints extension has CA=FALSE).<a href="#section-3.2-5.3.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-6.3">
+            <p id="section-3.2-6.3.1">Verify that the certificate is a leaf certificate (Basic Constraints extension has CA=FALSE).<a href="#section-3.2-6.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-5.4">
-            <p id="section-3.2-5.4.1">Verify that the certificate has the <code>digitalSignature</code> key usage bit set.<a href="#section-3.2-5.4.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-6.4">
+            <p id="section-3.2-6.4.1">Verify that the certificate has the <code>digitalSignature</code> key usage bit set.<a href="#section-3.2-6.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-3.2-5.5">
-            <p id="section-3.2-5.5.1">Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the <code>client_id</code> parameter of the request. If the <code>client_id</code> is a URL described in <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>, verify that the SPIFFE ID in the URI SAN matches the <code>spiffe_id</code> value in the Client ID Metadata Document as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a>. Otherwise, the SPIFFE ID <span class="bcp14">MUST</span> be associated with the <code>client_id</code> through the client's registration with the authorization server. An authorization server <span class="bcp14">MUST</span> reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the <code>client_id</code>.<a href="#section-3.2-5.5.1" class="pilcrow">¶</a></p>
+          <li id="section-3.2-6.5">
+            <p id="section-3.2-6.5.1">Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the <code>client_id</code> parameter of the request. If the <code>client_id</code> is a URL described in <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>, verify that the SPIFFE ID in the URI SAN matches the <code>spiffe_id</code> value in the Client ID Metadata Document as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a>. Otherwise, the SPIFFE ID <span class="bcp14">MUST</span> be associated with the <code>client_id</code> through the client's registration with the authorization server. An authorization server <span class="bcp14">MUST</span> reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the <code>client_id</code>.<a href="#section-3.2-6.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
-<p id="section-3.2-6">Authorization servers <span class="bcp14">MAY</span> issue certificate-bound access tokens as described in Section 3 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> to clients authenticated with an X509-SVID. Because X509-SVIDs are typically short-lived, such an access token cannot be used once the client's X509-SVID has been rotated, and the client needs to obtain a new access token.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
+<p id="section-3.2-7">Authorization servers <span class="bcp14">MAY</span> issue certificate-bound access tokens as described in Section 3 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> to clients authenticated with an X509-SVID. Because X509-SVIDs are typically short-lived, such an access token cannot be used once the client's X509-SVID has been rotated, and the client needs to obtain a new access token.<a href="#section-3.2-7" class="pilcrow">¶</a></p>
 <div id="x509-svid-example">
 <section id="section-3.2.1">
           <h4 id="name-x509-svid-example">
@@ -2210,22 +2211,25 @@ trust stores configured to validate the client SVID. This could result in an inc
           <p id="appendix-A-2.3.1">Require the <code>client_id</code> parameter for JWT-SVID client authentication.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
-          <p id="appendix-A-2.4.1">Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.4.1">Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.5">
-          <p id="appendix-A-2.5.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.5.1">Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.6">
-          <p id="appendix-A-2.6.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.6.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.7">
-          <p id="appendix-A-2.7.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.7.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.8">
-          <p id="appendix-A-2.8.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.8.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.9">
-          <p id="appendix-A-2.9.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.9.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.9.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.9.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.10">
+          <p id="appendix-A-2.10.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.10.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-ietf-oauth-spiffe-client-auth-02">
