@@ -89,6 +89,15 @@ normative:
     target: https://github.com/spiffe/spiffe/blob/main/standards/SPIFFE_Federation.md
 
 informative:
+  OpenID.RP-Metadata-Choices:
+    title: OpenID Connect Relying Party Metadata Choices 1.0
+    author:
+      - name: M.B. Jones
+      - name: R. Hedberg
+      - name: J. Bradley
+      - name: F. Skokan
+    date: 2026-03-25
+    target: https://openid.net/specs/openid-connect-rp-metadata-choices-1_0-final.html
 
 --- abstract
 
@@ -425,6 +434,8 @@ spiffe_bundle_endpoint
 
 If the `spiffe_id` value uses a wildcard, it MUST end with the two-character sequence "`/*`". In this case, the authorization server MUST perform a path-segment prefix match: the SPIFFE ID of the presented SVID MUST begin with the `spiffe_id` value excluding the trailing "`*`" (i.e., up to and including the final "`/`"), and this prefix MUST correspond to complete path segment(s) of the SPIFFE ID (for example, `spiffe://example.org/client/*` matches `spiffe://example.org/client/123` but does not match `spiffe://example.org/client123`). Otherwise, the SPIFFE ID of the presented SVID MUST be an exact match of the `spiffe_id` value.
 
+A client indicates the SPIFFE-based client authentication methods it supports in its client metadata, whether registered using Dynamic Client Registration {{RFC7591}} or published in a Client ID Metadata Document {{I-D.ietf-oauth-client-id-metadata-document}}, using the values defined in {{interoperability}}. A client that supports more than one method lists them in the `token_endpoint_auth_methods_supported` parameter defined in Section 2 of {{OpenID.RP-Metadata-Choices}}. A client SHOULD also include the `token_endpoint_auth_method` parameter {{RFC7591}} with its preferred method, so that authorization servers that do not support `token_endpoint_auth_methods_supported` do not apply the {{RFC7591}} default of `client_secret_basic`.
+
 # SPIFFE Key Distribution and Validation {#spiffe-bundle-validation}
 
 This section describes how an authorization server verifies the signature of SVIDs. It recommends two SPIFFE-native approaches.
@@ -668,6 +679,7 @@ This document requests the following entries in the "OAuth Token Endpoint Authen
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Describe how clients indicate one or more SPIFFE client authentication method (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/49)
 * Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)
 * Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)
 * Register `spiffe_jwt`, `spiffe_x509` and `spiffe_wit` in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)
