@@ -373,22 +373,18 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
    authorized to authenticate as the client identified by the client_id,
    according to the validation rules below.
 
-   The server validates the client certificates according the following
-   rules
+   The authorization server validates the client certificate according
+   to the following rules:
 
-   1.  Perform standard X.509 path validation against the trust anchors
-       according to Section 6.
+   1.  Validate the certificate as an X509-SVID according to
+       [SPIFFE_X509].
 
-   2.  Verify that the certificate contains exactly one URI SAN with a
-       valid SPIFFE ID.
+   2.  Path validation MUST use only the trust anchors for the trust
+       domain of the SPIFFE ID in the certificate's URI SAN, obtained as
+       described in Section 6.  Other trust anchors, including those of
+       other trust domains or the system trust store, MUST NOT be used.
 
-   3.  Verify that the certificate is a leaf certificate (Basic
-       Constraints extension has CA=FALSE).
-
-   4.  Verify that the certificate has the digitalSignature key usage
-       bit set.
-
-   5.  Verify that the SPIFFE ID in the URI SAN matches, or is
+   3.  Verify that the SPIFFE ID in the URI SAN matches, or is
        associated with, the client identified by the client_id parameter
        of the request.  If the client_id is a URL described in
        [I-D.ietf-oauth-client-id-metadata-document], verify that the
@@ -1160,6 +1156,10 @@ Appendix A.  Document History
 
    *  Require the client_id parameter for JWT-SVID client
       authentication.
+
+   *  Reference X509-SVID validation rules instead of restating them
+      (https://github.com/oauth-wg/oauth-spiffe-client-authentication/
+      issues/52)
 
    *  Describe how clients indicate one or more SPIFFE client
       authentication method (https://github.com/oauth-wg/oauth-spiffe-
