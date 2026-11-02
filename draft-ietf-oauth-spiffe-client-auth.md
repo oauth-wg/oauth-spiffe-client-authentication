@@ -170,7 +170,7 @@ To identify the assertion content as a JWT-SVID this specification establishes t
 urn:ietf:params:oauth:client-assertion-type:jwt-spiffe
 ~~~
 
-Based on {{RFC7523}} the following request parameters MUST be present to perform client authentication in the context of this specification:
+Based on {{RFC7523}} the following request parameters are used to perform client authentication in the context of this specification:
 
 * client_id: OPTIONAL. See {{client-identification}}.
 * client_assertion_type: MUST be set to `urn:ietf:params:oauth:client-assertion-type:jwt-spiffe`.
@@ -363,7 +363,7 @@ To validate a WIT-SVID client authentication request, the authorization server M
 * The WIT-SVID MUST be validated as a Workload Identity Token according to Section 5.1.3 of {{?I-D.draft-ietf-wimse-workload-creds}}.
 * The WIT-SVID signature MUST be verified using the signing keys of the trust domain according to {{spiffe-bundle-validation}}.
 * The Client Attestation PoP JWT MUST be validated according to Section 7.2 of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
-* If the request contains a `client_id` parameter, the SPIFFE ID in the `sub` claim MUST be associated with the client it identifies, as described in {{client-registration-metadata}} or through the client's registration with the authorization server. This replaces the `client_id` to `sub` matching rule of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}. If `client_id` is absent, the SPIFFE ID in the `sub` claim identifies the client.
+* The client MUST be identified and the SPIFFE ID in the `sub` claim MUST be verified according to {{client-identification}}. This replaces the `client_id` to `sub` matching rule of {{?I-D.draft-ietf-oauth-attestation-based-client-auth}}.
 
 The authorization server advertises support for WIT-SVID client authentication using the `spiffe_wit` value as described in {{interoperability}}. The `attest_jwt_client_auth` value defined in {{?I-D.draft-ietf-oauth-attestation-based-client-auth}} indicates support for Client Attestation JWTs in general and does not by itself indicate support for WIT-SVIDs.
 
