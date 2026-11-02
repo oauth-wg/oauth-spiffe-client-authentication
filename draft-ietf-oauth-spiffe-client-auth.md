@@ -602,10 +602,6 @@ Client authentication using X509-SVIDs has the same security considerations as d
 The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.
 
-## Authorization Server Authentication in Mutual TLS
-
-Mutual TLS does not require the client and the authorization server to use certificates from the same PKI. Because the client authenticates the authorization server using its regular HTTPS trust anchors (see Section 3.2), the authorization server presents a certificate from a PKI the client trusts for HTTPS, such as a WebPKI certificate valid for the host in the authorization server’s endpoint URL. The authorization server does not present an X.509-SVID, and the client does not need the SPIFFE trust bundle of any trust domain to authenticate the authorization server.
-
 ## JWT-SVID and WIT-SVID iss claim {#iss-claim-security-considerations}
 
 As described in {{svid-iss-claim}}, `iss`-based key discovery is not a general alternative to the SPIFFE Bundle Endpoint and SHOULD be avoided.
@@ -646,7 +642,7 @@ This document requests the following entries to be added to the "OAuth Dynamic C
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
-* * Clarify that the authorization server may present a WebPKI certificate
+* Clarify Authorization Server Authentication when using mutual TLS.
 
 ## draft-ietf-oauth-spiffe-client-auth-02
 
