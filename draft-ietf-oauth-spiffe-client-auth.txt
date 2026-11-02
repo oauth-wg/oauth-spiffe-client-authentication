@@ -632,6 +632,18 @@ client_id=spiffe://example.org/my-oauth-client
    SPIFFE ID of the presented SVID MUST be an exact match of the
    spiffe_id value.
 
+   A client indicates the SPIFFE-based client authentication methods it
+   supports in its client metadata, whether registered using Dynamic
+   Client Registration [RFC7591] or published in a Client ID Metadata
+   Document [I-D.ietf-oauth-client-id-metadata-document], using the
+   values defined in Section 4.  A client that supports more than one
+   method lists them in the token_endpoint_auth_methods_supported
+   parameter defined in Section 2 of [OpenID.RP-Metadata-Choices].  A
+   client SHOULD also include the token_endpoint_auth_method parameter
+   [RFC7591] with its preferred method, so that authorization servers
+   that do not support token_endpoint_auth_methods_supported do not
+   apply the [RFC7591] default of client_secret_basic.
+
 6.  SPIFFE Key Distribution and Validation
 
    This section describes how an authorization server verifies the
@@ -1129,6 +1141,12 @@ Certificate:
               <https://datatracker.ietf.org/doc/html/draft-ietf-wimse-
               workload-creds-03>.
 
+   [OpenID.RP-Metadata-Choices]
+              Jones, M.B., Hedberg, R., Bradley, J., and F. Skokan,
+              "OpenID Connect Relying Party Metadata Choices 1.0", 25
+              March 2026, <https://openid.net/specs/openid-connect-rp-
+              metadata-choices-1_0-final.html>.
+
 Appendix A.  Document History
 
 
@@ -1142,6 +1160,10 @@ Appendix A.  Document History
 
    *  Require the client_id parameter for JWT-SVID client
       authentication.
+
+   *  Describe how clients indicate one or more SPIFFE client
+      authentication method (https://github.com/oauth-wg/oauth-spiffe-
+      client-authentication/issues/49)
 
    *  Clarify that the authorization server selects X509-SVID client
       authentication from the client's registered authentication method
