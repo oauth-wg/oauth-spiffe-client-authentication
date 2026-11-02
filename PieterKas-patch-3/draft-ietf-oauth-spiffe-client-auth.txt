@@ -5,13 +5,13 @@
 Web Authorization Protocol                            A. Schwenkschuster
 Internet-Draft                                             P. Kasselmann
 Intended status: Standards Track                        Defakto Security
-Expires: 5 May 2027                                              S. Rose
+Expires: 6 May 2027                                              S. Rose
                                                                     NIST
                                                            S. Thorgersen
                                                                      IBM
                                                            N. Cam-Winget
                                                            Cisco Systems
-                                                         1 November 2026
+                                                         2 November 2026
 
 
                    OAuth SPIFFE Client Authentication
@@ -64,7 +64,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 5 May 2027.
+   This Internet-Draft will expire on 6 May 2027.
 
 Copyright Notice
 
@@ -392,6 +392,12 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
        An authorization server MUST reject the request if the SPIFFE ID
        in the URI SAN is not authorized to authenticate as the client
        identified by the client_id.
+
+   Authorization servers MAY issue certificate-bound access tokens as
+   described in Section 3 of [RFC8705] to clients authenticated with an
+   X.509-SVID.  Because X.509-SVIDs are typically short-lived, such an
+   access token cannot be used once the client's X.509-SVID has been
+   rotated, and the client needs to obtain a new access token.
 
 3.2.1.  X509-SVID Example
 
@@ -1106,6 +1112,10 @@ Appendix A.  Document History
 
    *  Provide guidance on jti parameter (see https://github.com/oauth-
       wg/oauth-spiffe-client-authentication/issues/20)
+
+   *  Added guidance on credential rotation and access token binding
+      (https://github.com/oauth-wg/oauth-spiffe-client-authentication/
+      issues/11)
 
 A.1.  draft-ietf-oauth-spiffe-client-auth-02
 
