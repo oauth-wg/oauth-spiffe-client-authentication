@@ -107,7 +107,8 @@ Table of Contents
        6.2.4.  Using the JWT-SVID or WIT-SVID iss claim
    7.  Implementation Status
    8.  Security Considerations
-     8.1.  JWT-SVID and WIT-SVID iss claim
+     8.1.  Replay of JWT-SVIDs
+     8.2.  JWT-SVID and WIT-SVID iss claim
    9.  IANA Considerations
      9.1.  OAuth Dynamic Client Registration Metadata
    10. References
@@ -393,6 +394,12 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
        in the URI SAN is not authorized to authenticate as the client
        identified by the client_id.
 
+   Authorization servers MAY issue certificate-bound access tokens as
+   described in Section 3 of [RFC8705] to clients authenticated with an
+   X.509-SVID.  Because X.509-SVIDs are typically short-lived, such an
+   access token cannot be used once the client's X.509-SVID has been
+   rotated, and the client needs to obtain a new access token.
+
 3.2.1.  X509-SVID Example
 
    The following request uses a refresh token to obtain a new access
@@ -633,24 +640,28 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
 
 6.1.  SPIFFE Bundle Endpoint
 
-   The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs,
-   JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to
+   The SPIFFE Bundle Endpoint as defined in Section 4 of
+   [SPIFFE_FEDERATION] exposes the signing keys for X509-SVIDs, JWT-
+   SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to
    [RFC7517].
 
-   Server authentication on this endpoint is available in two flavors.
-   For the sake of interoperability, in the context of this
-   specification the WebPKI flavor MUST be used.  This effectively means
-   that the server certificate of the bundle endpoint is trusted by the
-   authorization server accessing it.  See Sec 5.2.1 of
-   [SPIFFE_FEDERATION] for details.
+   SPIFFE Federation [SPIFFE_FEDERATION] defines two endpoint profiles
+   for serving and consuming a bundle endpoint.  For interoperability,
+   the authorization server MUST use the https_web profile
+   (Section 5.2.1 of [SPIFFE_FEDERATION]).  The bundle endpoint is
+   served over HTTPS, and the authorization server verifies the
+   endpoint's server certificate using standard HTTPS server certificate
+   verification against its locally configured trust anchors.  This
+   specification does not use the https_spiffe profile.
 
-   The authorization server SHOULD periodically poll the bundle endpoint
-   to retrieve updated trust bundles, following the refresh hint and
-   period provided in the bundle.  See [SPIFFE_FEDERATION] for details.
+   The authorization server SHOULD manage and refresh trust bundles
+   according to Section 4.1 and 4.2 of [SPIFFE_FEDERATION].
 
-   The SPIFFE bundle endpoint cannot be derived from the JWT-SVID,
-   X509-SVID or JWT-SVID and MUST be configured manually out of band.
-   Bundle endpoints MUST be keyed by the trust domain identifier.
+   The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE
+   ID.  A relying party MUST therefore obtain the bundle endpoint
+   through out-of-band configuration and MUST associate it with the name
+   of the trust domain whose bundle it serves.  Future profiles may
+   define other means of discovering the bundle endpoint.
 
 6.1.1.  Example
 
@@ -824,7 +835,7 @@ Certificate:
    supported by a peer deployment, implementations MAY use iss-based
    discovery and key retrieval for JWT-SVID or WIT-SVID validation as a
    compatibility mechanism, subject to local policy, appropriate trust
-   configuration and risk mitigations described in Section 8.1.
+   configuration and risk mitigations described in Section 8.2.
 
 7.  Implementation Status
 
@@ -884,7 +895,27 @@ Certificate:
    certificate that can be validated by one of the misconfigured trust
    anchors in the trust store.
 
-8.1.  JWT-SVID and WIT-SVID iss claim
+8.1.  Replay of JWT-SVIDs
+
+   [SPIFFE_JWT] permits but does not require a jti claim, and JWT-SVID
+   validators are not required to track jti uniqueness.  SPIFFE
+   implementations may also return the same cached JWT-SVID to a
+   workload for multiple requests.  Authorization servers therefore
+   cannot in general rely on jti-based replay detection as described in
+   [RFC7523].  An authorization server may use the jti claim for replay
+   detection where it is present and the deployment does not reuse JWT-
+   SVIDs across requests.  An attacker that obtains a JWT-SVID can use
+   it for client authentication until it expires.  The audience
+   restriction in step 3 of Section 3.1 limits its use to this
+   authorization server.
+
+   Deployments requiring replay resistance SHOULD either use JWT-SVIDs
+   that carry a unique jti claim and are not reused, with the
+   authorization server rejecting a repeated jti, or use X.509-SVID or
+   WIT-SVID client authentication, which require proof of possession of
+   a private key.
+
+8.2.  JWT-SVID and WIT-SVID iss claim
 
    As described in Section 6.2.4, iss-based key discovery is not a
    general alternative to the SPIFFE Bundle Endpoint and SHOULD be
@@ -1085,6 +1116,18 @@ Appendix A.  Document History
       authentication.
 
    *  Clarify Authorization Server Authentication when using mutual TLS.
+
+   *  Clarify use of https_web and https_spiffe profiles
+      (https://github.com/oauth-wg/oauth-spiffe-client-authentication/
+      issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-
+      authentication/issues/27)
+
+   *  Provide guidance on jti parameter (see https://github.com/oauth-
+      wg/oauth-spiffe-client-authentication/issues/20)
+
+   *  Added guidance on credential rotation and access token binding
+      (https://github.com/oauth-wg/oauth-spiffe-client-authentication/
+      issues/11)
 
 A.1.  draft-ietf-oauth-spiffe-client-auth-02
 

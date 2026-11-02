@@ -1258,7 +1258,10 @@ svg {
             <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
-                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-jwt-svid-and-wit-svid-iss-c" class="internal xref">JWT-SVID and WIT-SVID iss claim</a></p>
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-replay-of-jwt-svids" class="internal xref">Replay of JWT-SVIDs</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-jwt-svid-and-wit-svid-iss-c" class="internal xref">JWT-SVID and WIT-SVID iss claim</a></p>
 </li>
             </ul>
 </li>
@@ -1364,7 +1367,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
       </h2>
 <p id="section-3-1">This section describes how SPIFFE identity documents can be used for OAuth 2.0 client authentication, following the patterns established in <span>[<a href="#RFC7521" class="cite xref">RFC7521</a>]</span> and, in case of JWT-SVID <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">OAuth 2.0 client authentication is used to authenticate the client to the authorization server when making requests to the token endpoint. When using SPIFFE for client authentication, the client presents its SVID (JWT-SVID, WIT-SVID, or X.509-SVID) to prove its identity.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<div id="client-authentication-with-jwt-svids">
+<div id="jwt-svid">
 <section id="section-3.1">
         <h3 id="name-client-authentication-with-">
 <a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-client-authentication-with-" class="section-name selfRef">Client Authentication with JWT-SVIDs</a>
@@ -1523,6 +1526,7 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
             <p id="section-3.2-5.5.1">Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the <code>client_id</code> parameter of the request. If the <code>client_id</code> is a URL described in <span>[<a href="#I-D.ietf-oauth-client-id-metadata-document" class="cite xref">I-D.ietf-oauth-client-id-metadata-document</a>]</span>, verify that the SPIFFE ID in the URI SAN matches the <code>spiffe_id</code> value in the Client ID Metadata Document as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a>. Otherwise, the SPIFFE ID <span class="bcp14">MUST</span> be associated with the <code>client_id</code> through the client's registration with the authorization server. An authorization server <span class="bcp14">MUST</span> reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the <code>client_id</code>.<a href="#section-3.2-5.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
+<p id="section-3.2-6">Authorization servers <span class="bcp14">MAY</span> issue certificate-bound access tokens as described in Section 3 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span> to clients authenticated with an X.509-SVID. Because X.509-SVIDs are typically short-lived, such an access token cannot be used once the client's X.509-SVID has been rotated, and the client needs to obtain a new access token.<a href="#section-3.2-6" class="pilcrow">¶</a></p>
 <div id="x509-svid-example">
 <section id="section-3.2.1">
           <h4 id="name-x509-svid-example">
@@ -1749,10 +1753,10 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
         <h3 id="name-spiffe-bundle-endpoint">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-spiffe-bundle-endpoint" class="section-name selfRef">SPIFFE Bundle Endpoint</a>
         </h3>
-<p id="section-6.1-1">The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Server authentication on this endpoint is available in two flavors. For the sake of interoperability, in the context of this specification the WebPKI flavor <span class="bcp14">MUST</span> be used. This effectively means that the server certificate of the bundle endpoint is trusted by the authorization server accessing it. See Sec 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and <span class="bcp14">MUST</span> be configured manually out of band. Bundle endpoints <span class="bcp14">MUST</span> be keyed by the trust domain identifier.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">The SPIFFE Bundle Endpoint as defined in Section 4 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">SPIFFE Federation <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> defines two endpoint profiles for serving and consuming a bundle endpoint. For interoperability, the authorization server <span class="bcp14">MUST</span> use the <code>https_web</code> profile (Section 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. This specification does not use the <code>https_spiffe</code> profile.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> manage and refresh trust bundles according to Section 4.1 and 4.2 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE ID. A relying party <span class="bcp14">MUST</span> therefore obtain the bundle endpoint through out-of-band configuration and <span class="bcp14">MUST</span> associate it with the name of the trust domain whose bundle it serves. Future profiles may define other means of discovering the bundle endpoint.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
 <div id="example">
 <section id="section-6.1.1">
           <h4 id="name-example">
@@ -1921,7 +1925,7 @@ Certificate:
 <a href="#section-6.2.4" class="section-number selfRef">6.2.4. </a><a href="#name-using-the-jwt-svid-or-wit-s" class="section-name selfRef">Using the JWT-SVID or WIT-SVID <code>iss</code> claim</a>
           </h4>
 <p id="section-6.2.4-1">JSON Web Token-based credentials carrying <code>iss</code> claims could technically be validated by retrieving the signing keys via OpenID Connect Discovery or OAuth 2.0 Authorization Server Metadata. This approach only applies for the JWT-SVID and WIT-SVID and only works when the <code>iss</code> claim is present, which is optional.<a href="#section-6.2.4-1" class="pilcrow">¶</a></p>
-<p id="section-6.2.4-2">Because of its narrow scope and interoperability considerations, this approach is not a general alternative to the SPIFFE Bundle Endpoint. Implementations <span class="bcp14">SHOULD</span> use the mechanisms defined in this specification when available. However, when those mechanisms are not supported by a peer deployment, implementations <span class="bcp14">MAY</span> use <code>iss</code>-based discovery and key retrieval for JWT-SVID or WIT-SVID validation as a compatibility mechanism, subject to local policy, appropriate trust configuration and risk mitigations described in <a href="#iss-claim-security-considerations" class="auto internal xref">Section 8.1</a>.<a href="#section-6.2.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.2.4-2">Because of its narrow scope and interoperability considerations, this approach is not a general alternative to the SPIFFE Bundle Endpoint. Implementations <span class="bcp14">SHOULD</span> use the mechanisms defined in this specification when available. However, when those mechanisms are not supported by a peer deployment, implementations <span class="bcp14">MAY</span> use <code>iss</code>-based discovery and key retrieval for JWT-SVID or WIT-SVID validation as a compatibility mechanism, subject to local policy, appropriate trust configuration and risk mitigations described in <a href="#iss-claim-security-considerations" class="auto internal xref">Section 8.2</a>.<a href="#section-6.2.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1963,14 +1967,23 @@ This section records the status of known implementations of the protocol defined
 <p id="section-8-3">Client authentication using X509-SVIDs has the same security considerations as described in <span>[<a href="#I-D.draft-ietf-wimse-workload-creds" class="cite xref">I-D.draft-ietf-wimse-workload-creds</a>]</span> and <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span><a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">The issues described in Section 5.2 above include the threat that an authorization server may have the incorrect
 trust stores configured to validate the client SVID. This could result in an incorrectly issued token to an attacker if the attacker is able to obtain a certificate that can be validated by one of the misconfigured trust anchors in the trust store.<a href="#section-8-4" class="pilcrow">¶</a></p>
-<div id="iss-claim-security-considerations">
+<div id="replay-of-jwt-svids">
 <section id="section-8.1">
-        <h3 id="name-jwt-svid-and-wit-svid-iss-c">
-<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-jwt-svid-and-wit-svid-iss-c" class="section-name selfRef">JWT-SVID and WIT-SVID iss claim</a>
+        <h3 id="name-replay-of-jwt-svids">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-replay-of-jwt-svids" class="section-name selfRef">Replay of JWT-SVIDs</a>
         </h3>
-<p id="section-8.1-1">As described in <a href="#svid-iss-claim" class="auto internal xref">Section 6.2.4</a>, <code>iss</code>-based key discovery is not a general alternative to the SPIFFE Bundle Endpoint and <span class="bcp14">SHOULD</span> be avoided.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
-<p id="section-8.1-2">However, if it is used, the authorization server <span class="bcp14">MUST NOT</span> perform issuer-based discovery solely based on the <code>iss</code> value from the token unless the <code>iss</code> value is already trusted by the authorization server, and that <code>iss</code> value is explicitly associated with the configured SPIFFE Trust Domain being validated.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
-<p id="section-8.1-3">In addition implementations <span class="bcp14">MUST NOT</span> assume that keys advertised via OpenID Connect Discovery or OAuth 2.0 Authorization Server Metadata are dedicated to JWT-SVID issuance. The same provider infrastructure may issue multiple JWT types (e.g., OAuth/OIDC tokens, JWT-SVIDs, WIT-SVIDs). A token <span class="bcp14">MUST NOT</span> be accepted as a JWT-SVID or WIT-SVID solely because it is a JWT, its signature validates under keys discovered from iss, and its <code>sub</code> resembles a SPIFFE ID. Doing so can enable token confusion (e.g., presenting an OAuth/OIDC token issued for another purpose as a JWT-SVID). Implementations <span class="bcp14">MUST</span> validate SVIDs according to SVID-specific requirements and <span class="bcp14">MUST</span> use a trust anchor or key source explicitly bound to the configured SPIFFE Trust Domain, rather than generic issuer-based discovery from untrusted token input.<a href="#section-8.1-3" class="pilcrow">¶</a></p>
+<p id="section-8.1-1"><span>[<a href="#SPIFFE_JWT" class="cite xref">SPIFFE_JWT</a>]</span> permits but does not require a <code>jti</code> claim, and JWT-SVID validators are not required to track <code>jti</code> uniqueness. SPIFFE implementations may also return the same cached JWT-SVID to a workload for multiple requests. Authorization servers therefore cannot in general rely on <code>jti</code>-based replay detection as described in <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span>. An authorization server may use the <code>jti</code> claim for replay detection where it is present and the deployment does not reuse JWT-SVIDs across requests. An attacker that obtains a JWT-SVID can use it for client authentication until it expires. The audience restriction in step 3 of <a href="#jwt-svid" class="auto internal xref">Section 3.1</a> limits its use to this authorization server.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Deployments requiring replay resistance <span class="bcp14">SHOULD</span> either use JWT-SVIDs that carry a unique <code>jti</code> claim and are not reused, with the authorization server rejecting a repeated <code>jti</code>, or use X.509-SVID or WIT-SVID client authentication, which require proof of possession of a private key.<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iss-claim-security-considerations">
+<section id="section-8.2">
+        <h3 id="name-jwt-svid-and-wit-svid-iss-c">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-jwt-svid-and-wit-svid-iss-c" class="section-name selfRef">JWT-SVID and WIT-SVID iss claim</a>
+        </h3>
+<p id="section-8.2-1">As described in <a href="#svid-iss-claim" class="auto internal xref">Section 6.2.4</a>, <code>iss</code>-based key discovery is not a general alternative to the SPIFFE Bundle Endpoint and <span class="bcp14">SHOULD</span> be avoided.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+<p id="section-8.2-2">However, if it is used, the authorization server <span class="bcp14">MUST NOT</span> perform issuer-based discovery solely based on the <code>iss</code> value from the token unless the <code>iss</code> value is already trusted by the authorization server, and that <code>iss</code> value is explicitly associated with the configured SPIFFE Trust Domain being validated.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+<p id="section-8.2-3">In addition implementations <span class="bcp14">MUST NOT</span> assume that keys advertised via OpenID Connect Discovery or OAuth 2.0 Authorization Server Metadata are dedicated to JWT-SVID issuance. The same provider infrastructure may issue multiple JWT types (e.g., OAuth/OIDC tokens, JWT-SVIDs, WIT-SVIDs). A token <span class="bcp14">MUST NOT</span> be accepted as a JWT-SVID or WIT-SVID solely because it is a JWT, its signature validates under keys discovered from iss, and its <code>sub</code> resembles a SPIFFE ID. Doing so can enable token confusion (e.g., presenting an OAuth/OIDC token issued for another purpose as a JWT-SVID). Implementations <span class="bcp14">MUST</span> validate SVIDs according to SVID-specific requirements and <span class="bcp14">MUST</span> use a trust anchor or key source explicitly bound to the configured SPIFFE Trust Domain, rather than generic issuer-based discovery from untrusted token input.<a href="#section-8.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2158,6 +2171,15 @@ trust stores configured to validate the client SVID. This could result in an inc
 </li>
         <li class="normal" id="appendix-A-2.4">
           <p id="appendix-A-2.4.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.5">
+          <p id="appendix-A-2.5.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.6">
+          <p id="appendix-A-2.6.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.7">
+          <p id="appendix-A-2.7.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-ietf-oauth-spiffe-client-auth-02">
