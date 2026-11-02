@@ -260,13 +260,11 @@ The authorization server determines that X509-SVID client authentication applies
 
 The request MUST include the `client_id` parameter identifying the client. The `client_id` MAY be the SPIFFE ID of the client, or any other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID MUST be authorized to authenticate as the client identified by the `client_id`, according to the validation rules below.
 
-The server validates the client certificates according the following rules
+The authorization server validates the client certificate according to the following rules:
 
-1. Perform standard X.509 path validation against the trust anchors according to {{spiffe-bundle-validation}}.
-2. Verify that the certificate contains exactly one URI SAN with a valid SPIFFE ID.
-3. Verify that the certificate is a leaf certificate (Basic Constraints extension has CA=FALSE).
-4. Verify that the certificate has the `digitalSignature` key usage bit set.
-5. Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the URI SAN matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the `client_id`.
+1. Validate the certificate as an X509-SVID according to {{SPIFFE_X509}}.
+2. Path validation MUST use only the trust anchors for the trust domain of the SPIFFE ID in the certificate's URI SAN, obtained as described in {{spiffe-bundle-validation}}. Other trust anchors, including those of other trust domains or the system trust store, MUST NOT be used.
+3. Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the URI SAN matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the `client_id`.
 
 Authorization servers MAY issue certificate-bound access tokens as described in Section 3 of {{RFC8705}} to clients authenticated with an X509-SVID. Because X509-SVIDs are typically short-lived, such an access token cannot be used once the client's X509-SVID has been rotated, and the client needs to obtain a new access token.
 
@@ -679,6 +677,7 @@ This document requests the following entries in the "OAuth Token Endpoint Authen
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Reference X509-SVID validation rules instead of restating them (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52)
 * Describe how clients indicate one or more SPIFFE client authentication method (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/49)
 * Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)
 * Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)
