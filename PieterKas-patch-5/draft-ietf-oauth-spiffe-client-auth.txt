@@ -107,8 +107,7 @@ Table of Contents
        6.2.4.  Using the JWT-SVID or WIT-SVID iss claim
    7.  Implementation Status
    8.  Security Considerations
-     8.1.  Authorization Server Authentication in Mutual TLS
-     8.2.  JWT-SVID and WIT-SVID iss claim
+     8.1.  JWT-SVID and WIT-SVID iss claim
    9.  IANA Considerations
      9.1.  OAuth Dynamic Client Registration Metadata
    10. References
@@ -825,7 +824,7 @@ Certificate:
    supported by a peer deployment, implementations MAY use iss-based
    discovery and key retrieval for JWT-SVID or WIT-SVID validation as a
    compatibility mechanism, subject to local policy, appropriate trust
-   configuration and risk mitigations described in Section 8.2.
+   configuration and risk mitigations described in Section 8.1.
 
 7.  Implementation Status
 
@@ -885,19 +884,7 @@ Certificate:
    certificate that can be validated by one of the misconfigured trust
    anchors in the trust store.
 
-8.1.  Authorization Server Authentication in Mutual TLS
-
-   Mutual TLS does not require the client and the authorization server
-   to use certificates from the same PKI.  Because the client
-   authenticates the authorization server using its regular HTTPS trust
-   anchors (see Section 3.2), the authorization server presents a
-   certificate from a PKI the client trusts for HTTPS, such as a WebPKI
-   certificate valid for the host in the authorization server’s endpoint
-   URL.  The authorization server does not present an X.509-SVID, and
-   the client does not need the SPIFFE trust bundle of any trust domain
-   to authenticate the authorization server.
-
-8.2.  JWT-SVID and WIT-SVID iss claim
+8.1.  JWT-SVID and WIT-SVID iss claim
 
    As described in Section 6.2.4, iss-based key discovery is not a
    general alternative to the SPIFFE Bundle Endpoint and SHOULD be
@@ -1097,8 +1084,7 @@ Appendix A.  Document History
    *  Require the client_id parameter for JWT-SVID client
       authentication.
 
-   *  -  Clarify that the authorization server may present a WebPKI
-         certificate
+   *  Clarify Authorization Server Authentication when using mutual TLS.
 
 A.1.  draft-ietf-oauth-spiffe-client-auth-02
 
