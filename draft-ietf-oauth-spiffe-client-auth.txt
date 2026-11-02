@@ -89,7 +89,7 @@ Table of Contents
      3.1.  Client Authentication with JWT-SVIDs
        3.1.1.  JWT-SVID example
        3.1.2.  JWT-SVID example with Client ID Metadata Document
-     3.2.  Client Authentication using X509-SVID
+     3.2.  Client Authentication using X.509-SVID
        3.2.1.  X509-SVID Example
      3.3.  Client Authentication with WIT-SVIDs
        3.3.1.  Authorization Server Validation
@@ -111,6 +111,7 @@ Table of Contents
      8.2.  JWT-SVID and WIT-SVID iss claim
    9.  IANA Considerations
      9.1.  OAuth Dynamic Client Registration Metadata
+     9.2.  OAuth Token Endpoint Authentication Methods
    10. References
      10.1.  Normative References
      10.2.  Informative References
@@ -344,7 +345,7 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6IjR2QzhhZ3ljSHU2cm5rRUVKWUFINlZ1Q2U
       "spiffe_bundle_endpoint": "https://example.org/client/bundle.json"
   }
 
-3.2.  Client Authentication using X509-SVID
+3.2.  Client Authentication using X.509-SVID
 
    X.509-SVID based authentication uses mutual TLS as defined in OAuth
    2.0 Mutual-TLS Client Authentication [RFC8705], with specific
@@ -565,11 +566,12 @@ client_id=spiffe://example.org/my-oauth-client
    authentication methods are supported.
 
    Authorization servers MUST support at least one of JWT-SVID,
-   X509-SVID or WIT-SVID.  The methods supported MUST be advertised in
+   X.509-SVID or WIT-SVID.  The methods supported MUST be advertised in
    the authorization servers metadata [RFC8414] by including spiffe_jwt,
    spiffe_wit and/or spiffe_x509 in the
    token_endpoint_auth_methods_supported list.  Additionally, the same
-   should be included in revocation_endpoint_auth_methods_supported and
+   values should be included in
+   revocation_endpoint_auth_methods_supported and
    introspection_endpoint_auth_methods_supported when applicable.
 
    Clients MUST support at least one of JWT-SVID, X509-SVID or WIT-SVID.
@@ -982,6 +984,29 @@ Certificate:
 
    *  Reference: This Document
 
+9.2.  OAuth Token Endpoint Authentication Methods
+
+   This document requests the following entries in the "OAuth Token
+   Endpoint Authentication Methods" registry:
+
+   *  Token Endpoint Authentication Method Name: spiffe_jwt
+
+   *  Change Controller: IETF
+
+   *  Reference: Section 3.1 of this document
+
+   *  Token Endpoint Authentication Method Name: spiffe_x509
+
+   *  Change Controller: IETF
+
+   *  Reference: Section 3.2 of this document
+
+   *  Token Endpoint Authentication Method Name: spiffe_wit
+
+   *  Change Controller: IETF
+
+   *  Reference: Section 3.3 of this document
+
 10.  References
 
 10.1.  Normative References
@@ -1114,6 +1139,10 @@ Appendix A.  Document History
 
    *  Require the client_id parameter for JWT-SVID client
       authentication.
+
+   *  Register spiffe_jwt, spiffe_x509 and spiffe_wit in the OAuth Token
+      Endpoint Authentication Methods registry (see https://github.com/
+      oauth-wg/oauth-spiffe-client-authentication/issues/48)
 
    *  Clarify Authorization Server Authentication when using mutual TLS.
 
