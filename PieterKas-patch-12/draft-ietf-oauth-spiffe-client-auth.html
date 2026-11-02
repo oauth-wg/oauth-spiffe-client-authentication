@@ -1539,7 +1539,7 @@ client_assertion=eyJhbGciOiJFUzI1NiIsImtpZCI6Ilh0V09KcFB2TGJteHdJekVpVmJaU1B0dVd
 <p id="section-3.3-1">X509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TLS Client Authentication <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, with specific adaptations for SPIFFE X509-SVIDs.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
 <p id="section-3.3-2">To authenticate using an X509-SVID, the client establishes a mutual TLS connection with the authorization server using its X509-SVID as the client certificate. The authorization server validates the client certificate as an X509-SVID and extracts the SPIFFE ID from the URI SAN. The client <span class="bcp14">MUST</span> authenticate the authorization server using standard HTTPS server certificate verification, with the trust anchors it uses for other HTTPS connections.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
 <p id="section-3.3-3">The authorization server determines that X509-SVID client authentication applies from the client's registered authentication method (e.g., a <code>token_endpoint_auth_method</code> value of <code>spiffe_x509</code>), and not from the format of the <code>client_id</code> value.<a href="#section-3.3-3" class="pilcrow">¶</a></p>
-<p id="section-3.3-4">The <code>client_id</code> parameter is <span class="bcp14">OPTIONAL</span>. This deviates from Section 2 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, which requires the <code>client_id</code> parameter for mutual-TLS client authentication. Because the X.509-SVID carries exactly one SPIFFE ID in its URI SAN, the client can be identified from the certificate without ambiguity. See <a href="#client-identification" class="auto internal xref">Section 3.1</a>.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
+<p id="section-3.3-4">The <code>client_id</code> parameter is <span class="bcp14">OPTIONAL</span>. This deviates from Section 2 of <span>[<a href="#RFC8705" class="cite xref">RFC8705</a>]</span>, which requires the <code>client_id</code> parameter for mutual-TLS client authentication. Because the X509-SVID carries exactly one SPIFFE ID in its URI SAN, the client can be identified from the certificate without ambiguity. See <a href="#client-identification" class="auto internal xref">Section 3.1</a>.<a href="#section-3.3-4" class="pilcrow">¶</a></p>
 <p id="section-3.3-5">The authorization server validates the client certificate according to the following rules:<a href="#section-3.3-5" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-3.3-6">
 <li id="section-3.3-6.1">
@@ -2283,40 +2283,37 @@ This section records the status of known implementations of the protocol defined
           <p id="appendix-A-2.3.1">Regenerate the examples for consistency (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/50)<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
-          <p id="appendix-A-2.4.1">Remove the requirement that the <code>client_id</code> must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.4.1">Describe the trust model and mitigations for obtaining trust bundles from Client ID Metadata Documents (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.5">
-          <p id="appendix-A-2.5.1">Describe the trust model and mitigations for obtaining trust bundles from Client ID Metadata Documents (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/55)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.5.1">Fixed Nits (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/67)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.6">
-          <p id="appendix-A-2.6.1">Fixed Nits (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/67)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.6.1">Reference X509-SVID validation rules instead of restating them (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.7">
-          <p id="appendix-A-2.7.1">Reference X509-SVID validation rules instead of restating them (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.7.1">Describe how clients indicate one or more SPIFFE client authentication method (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/49)<a href="#appendix-A-2.7.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.8">
-          <p id="appendix-A-2.8.1">Describe how clients indicate one or more SPIFFE client authentication method (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/49)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.8.1">Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)<a href="#appendix-A-2.8.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.9">
-          <p id="appendix-A-2.9.1">Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)<a href="#appendix-A-2.9.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.9.1">Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)<a href="#appendix-A-2.9.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.10">
-          <p id="appendix-A-2.10.1">Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)<a href="#appendix-A-2.10.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.10.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.10.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.11">
-          <p id="appendix-A-2.11.1">Register <code>spiffe_jwt</code>, <code>spiffe_x509</code> and <code>spiffe_wit</code> in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)<a href="#appendix-A-2.11.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.11.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.11.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.12">
-          <p id="appendix-A-2.12.1">Clarify Authorization Server Authentication when using mutual TLS.<a href="#appendix-A-2.12.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.12.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.12.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.13">
-          <p id="appendix-A-2.13.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.13.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.13.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.13.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.14">
-          <p id="appendix-A-2.14.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.14.1" class="pilcrow">¶</a></p>
-</li>
-        <li class="normal" id="appendix-A-2.15">
-          <p id="appendix-A-2.15.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.15.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.14.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.14.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-ietf-oauth-spiffe-client-auth-02">
