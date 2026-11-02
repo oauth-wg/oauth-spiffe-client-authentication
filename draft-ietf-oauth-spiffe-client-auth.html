@@ -1753,10 +1753,10 @@ Trust domain "production": SPIFFE Bundle Endpoint at https://example.com/auth/sp
         <h3 id="name-spiffe-bundle-endpoint">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-spiffe-bundle-endpoint" class="section-name selfRef">SPIFFE Bundle Endpoint</a>
         </h3>
-<p id="section-6.1-1">The SPIFFE Bundle Endpoint exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Server authentication on this endpoint is available in two flavors. For the sake of interoperability, in the context of this specification the WebPKI flavor <span class="bcp14">MUST</span> be used. This effectively means that the server certificate of the bundle endpoint is trusted by the authorization server accessing it. See Sec 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> periodically poll the bundle endpoint to retrieve updated trust bundles, following the refresh hint and period provided in the bundle. See <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> for details.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
-<p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from the JWT-SVID, X509-SVID or JWT-SVID and <span class="bcp14">MUST</span> be configured manually out of band. Bundle endpoints <span class="bcp14">MUST</span> be keyed by the trust domain identifier.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">The SPIFFE Bundle Endpoint as defined in Section 4 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> exposes the signing keys for X509-SVIDs, JWT-SVIDs and WIT-SVID over HTTP via a JSON Web Key Set according to <span>[<a href="#RFC7517" class="cite xref">RFC7517</a>]</span>.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">SPIFFE Federation <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span> defines two endpoint profiles for serving and consuming a bundle endpoint. For interoperability, the authorization server <span class="bcp14">MUST</span> use the <code>https_web</code> profile (Section 5.2.1 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>). The bundle endpoint is served over HTTPS, and the authorization server verifies the endpoint's server certificate using standard HTTPS server certificate verification against its locally configured trust anchors. This specification does not use the <code>https_spiffe</code> profile.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-3">The authorization server <span class="bcp14">SHOULD</span> manage and refresh trust bundles according to Section 4.1 and 4.2 of <span>[<a href="#SPIFFE_FEDERATION" class="cite xref">SPIFFE_FEDERATION</a>]</span>.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1-4">The SPIFFE bundle endpoint cannot be derived from an SVID or SPIFFE ID. A relying party <span class="bcp14">MUST</span> therefore obtain the bundle endpoint through out-of-band configuration and <span class="bcp14">MUST</span> associate it with the name of the trust domain whose bundle it serves. Future profiles may define other means of discovering the bundle endpoint.<a href="#section-6.1-4" class="pilcrow">¶</a></p>
 <div id="example">
 <section id="section-6.1.1">
           <h4 id="name-example">
@@ -2170,10 +2170,13 @@ trust stores configured to validate the client SVID. This could result in an inc
           <p id="appendix-A-2.3.1">Require the <code>client_id</code> parameter for JWT-SVID client authentication.<a href="#appendix-A-2.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.4">
-          <p id="appendix-A-2.4.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.4.1">Clarify use of <code>https_web</code> and <code>https_spiffe</code> profiles (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/22 and https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/27)<a href="#appendix-A-2.4.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="appendix-A-2.5">
-          <p id="appendix-A-2.5.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+          <p id="appendix-A-2.5.1">Provide guidance on jti parameter (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/20)<a href="#appendix-A-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-A-2.6">
+          <p id="appendix-A-2.6.1">Added guidance on credential rotation and access token binding (https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/11)<a href="#appendix-A-2.6.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-ietf-oauth-spiffe-client-auth-02">
