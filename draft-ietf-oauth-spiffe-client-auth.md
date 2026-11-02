@@ -247,7 +247,9 @@ X509-SVID based authentication uses mutual TLS as defined in OAuth 2.0 Mutual-TL
 
 To authenticate using an X509-SVID, the client establishes a mutual TLS connection with the authorization server using its X509-SVID as the client certificate. The authorization server validates the client certificate as an X509-SVID and extracts the SPIFFE ID from the URI SAN. The client MUST authenticate the authorization server using standard HTTPS server certificate verification, with the trust anchors it uses for other HTTPS connections.
 
-The request MUST include the `client_id` parameter identifying the client. The `client_id` MAY be the SPIFFE ID of the client, or other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID MUST be authorized to authenticate as the client identified by the `client_id`, as described below.
+The authorization server determines that X509-SVID client authentication applies from the client's registered authentication method (e.g., a `token_endpoint_auth_method` value of `spiffe_x509`), and not from the format of the `client_id` value.
+
+The request MUST include the `client_id` parameter identifying the client. The `client_id` MAY be the SPIFFE ID of the client, or any other client identifier recognized by the authorization server, such as a URL pointing to a Client ID Metadata Document ({{I-D.ietf-oauth-client-id-metadata-document}}). In either case, the SPIFFE ID carried in the URI SAN of the presented X509-SVID MUST be authorized to authenticate as the client identified by the `client_id`, according to the validation rules below.
 
 The server validates the client certificates according the following rules
 
@@ -666,6 +668,7 @@ This document requests the following entries in the "OAuth Token Endpoint Authen
 
 * Remove the requirement that the `client_id` must match the URI SAN of the presented X509-SVID and align client identifier validation across authentication methods.
 * Require the `client_id` parameter for JWT-SVID client authentication.
+* Clarify that the authorization server selects X509-SVID client authentication from the client's registered authentication method (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/31)
 * Align terminology with SPIFFE (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/45)
 * Register `spiffe_jwt`, `spiffe_x509` and `spiffe_wit` in the OAuth Token Endpoint Authentication Methods registry (see https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/48)
 * Clarify Authorization Server Authentication when using mutual TLS.
