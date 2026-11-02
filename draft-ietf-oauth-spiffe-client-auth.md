@@ -251,8 +251,8 @@ The request MUST include the `client_id` parameter identifying the client. The `
 
 The authorization server validates the client certificate according to the following rules:
 
-1. Validate the certificate as an X509-SVID according to Section 5 of {{SPIFFE_X509}}, which covers path validation and leaf validation.
-2. Perform path validation using the trust anchors for the trust domain of the SPIFFE ID in the certificate's URI SAN, obtained as described in {{spiffe-bundle-validation}}. Other trust anchors, including those of other trust domain MUST NOT be used.
+1. Validate the certificate as an X509-SVID according to {{SPIFFE_X509}}.
+2. Path validation MUST use only the trust anchors for the trust domain of the SPIFFE ID in the certificate's URI SAN, obtained as described in {{spiffe-bundle-validation}}. Other trust anchors, including those of other trust domains or the system trust store, MUST NOT be used.
 3. Verify that the SPIFFE ID in the URI SAN matches, or is associated with, the client identified by the `client_id` parameter of the request. If the `client_id` is a URL described in {{I-D.ietf-oauth-client-id-metadata-document}}, verify that the SPIFFE ID in the URI SAN matches the `spiffe_id` value in the Client ID Metadata Document as described in {{client-registration-metadata}}. Otherwise, the SPIFFE ID MUST be associated with the `client_id` through the client's registration with the authorization server. An authorization server MUST reject the request if the SPIFFE ID in the URI SAN is not authorized to authenticate as the client identified by the `client_id`.
 
 ### X509-SVID Example
