@@ -251,9 +251,8 @@ Table of Contents
 
    urn:ietf:params:oauth:client-assertion-type:jwt-spiffe
 
-   Based on [RFC7523] the following request parameters MUST be present
-   to perform client authentication in the context of this
-   specification:
+   Based on [RFC7523] the following request parameters are used to
+   perform client authentication in the context of this specification:
 
    *  client_id: OPTIONAL.  See Section 3.1.
 
@@ -516,14 +515,10 @@ Certificate:
       Section 7.2 of
       [I-D.draft-ietf-oauth-attestation-based-client-auth].
 
-   *  If the request contains a client_id parameter, the SPIFFE ID in
-      the sub claim MUST be associated with the client it identifies, as
-      described in Section 5.1 or through the client's registration with
-      the authorization server.  This replaces the client_id to sub
-      matching rule of
-      [I-D.draft-ietf-oauth-attestation-based-client-auth].  If
-      client_id is absent, the SPIFFE ID in the sub claim identifies the
-      client.
+   *  The client MUST be identified and the SPIFFE ID in the sub claim
+      MUST be verified according to Section 3.1.  This replaces the
+      client_id to sub matching rule of
+      [I-D.draft-ietf-oauth-attestation-based-client-auth].
 
    The authorization server advertises support for WIT-SVID client
    authentication using the spiffe_wit value as described in Section 4.

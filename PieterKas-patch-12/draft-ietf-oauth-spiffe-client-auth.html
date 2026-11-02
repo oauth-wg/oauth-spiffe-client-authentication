@@ -1411,7 +1411,7 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 urn:ietf:params:oauth:client-assertion-type:jwt-spiffe
 </pre><a href="#section-3.2-3" class="pilcrow">¶</a>
 </div>
-<p id="section-3.2-4">Based on <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> the following request parameters <span class="bcp14">MUST</span> be present to perform client authentication in the context of this specification:<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">Based on <span>[<a href="#RFC7523" class="cite xref">RFC7523</a>]</span> the following request parameters are used to perform client authentication in the context of this specification:<a href="#section-3.2-4" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-3.2-5.1">
             <p id="section-3.2-5.1.1">client_id: <span class="bcp14">OPTIONAL</span>. See <a href="#client-identification" class="auto internal xref">Section 3.1</a>.<a href="#section-3.2-5.1.1" class="pilcrow">¶</a></p>
@@ -1652,7 +1652,7 @@ Certificate:
               <p id="section-3.4.1-3.4.1">The Client Attestation PoP JWT <span class="bcp14">MUST</span> be validated according to Section 7.2 of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>.<a href="#section-3.4.1-3.4.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-3.4.1-3.5">
-              <p id="section-3.4.1-3.5.1">If the request contains a <code>client_id</code> parameter, the SPIFFE ID in the <code>sub</code> claim <span class="bcp14">MUST</span> be associated with the client it identifies, as described in <a href="#client-registration-metadata" class="auto internal xref">Section 5.1</a> or through the client's registration with the authorization server. This replaces the <code>client_id</code> to <code>sub</code> matching rule of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>. If <code>client_id</code> is absent, the SPIFFE ID in the <code>sub</code> claim identifies the client.<a href="#section-3.4.1-3.5.1" class="pilcrow">¶</a></p>
+              <p id="section-3.4.1-3.5.1">The client <span class="bcp14">MUST</span> be identified and the SPIFFE ID in the <code>sub</code> claim <span class="bcp14">MUST</span> be verified according to <a href="#client-identification" class="auto internal xref">Section 3.1</a>. This replaces the <code>client_id</code> to <code>sub</code> matching rule of <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span>.<a href="#section-3.4.1-3.5.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 <p id="section-3.4.1-4">The authorization server advertises support for WIT-SVID client authentication using the <code>spiffe_wit</code> value as described in <a href="#interoperability" class="auto internal xref">Section 4</a>. The <code>attest_jwt_client_auth</code> value defined in <span>[<a href="#I-D.draft-ietf-oauth-attestation-based-client-auth" class="cite xref">I-D.draft-ietf-oauth-attestation-based-client-auth</a>]</span> indicates support for Client Attestation JWTs in general and does not by itself indicate support for WIT-SVIDs.<a href="#section-3.4.1-4" class="pilcrow">¶</a></p>
