@@ -261,7 +261,8 @@ The `client_id` points to a Client ID Metadata Document ({{I-D.ietf-oauth-client
     "client_id": "https://example.org/client/metadata.json",
     "client_name": "Example Client",
     "spiffe_id": "spiffe://example.org/client/*",
-    "spiffe_bundle_endpoint": "https://example.org/client/bundle.json"
+    "spiffe_bundle_endpoint": "https://example.org/client/bundle.json",
+    "token_endpoint_auth_methods_supported": ["spiffe_jwt"]
 }
 ~~~
 
