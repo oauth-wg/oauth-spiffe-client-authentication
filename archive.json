@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-03T00:08:43.802689+00:00",
+  "timestamp": "2026-11-08T00:10:18.548634+00:00",
   "repo": "oauth-wg/oauth-spiffe-client-authentication",
   "labels": [
     {
@@ -3556,6 +3556,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 70,
+      "id": "PR_kwDOOml42M8AAAABNUvFgg",
+      "title": "Add token_endpoint_auth_methods_supported to the CIMD example",
+      "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/pull/70",
+      "state": "OPEN",
+      "author": "shlee1223",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The Client ID Metadata Document in the JWT-SVID example has neither `token_endpoint_auth_method` nor `token_endpoint_auth_methods_supported`. The [Client ID Metadata Document draft](https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/) says that in this case \"the authorization server MUST assume the token endpoint authentication method of `none`\", and that if the client then includes client authentication in a token request, the authorization server \"MUST reject the request with `invalid_client`\". The example token request uses a JWT-SVID `client_assertion`, so it would be rejected.\n\nThis adds `\"token_endpoint_auth_methods_supported\": [\"spiffe_jwt\"]` to the example, which is also how the Client Registration Metadata section says clients indicate their SPIFFE authentication methods.\n",
+      "createdAt": "2026-11-06T14:11:43Z",
+      "updatedAt": "2026-11-06T14:11:43Z",
+      "baseRepository": "oauth-wg/oauth-spiffe-client-authentication",
+      "baseRefName": "main",
+      "baseRefOid": "807cc03d997d909dbb5a8851dc6c3f6bb954232c",
+      "headRepository": "shlee1223/oauth-spiffe-client-authentication",
+      "headRefName": "cimd-example-auth-methods",
+      "headRefOid": "4171556c61ee5b378dce58bd4070aefd3d206311",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
