@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-08T00:10:18.548634+00:00",
+  "timestamp": "2026-11-19T00:09:33.887206+00:00",
   "repo": "oauth-wg/oauth-spiffe-client-authentication",
   "labels": [
     {
@@ -573,9 +573,17 @@
       "labels": [],
       "body": "In the client authentication method using WIT-SVID defined in [draft 01](https://www.ietf.org/archive/id/draft-ietf-oauth-spiffe-client-auth-01.html) of the [OAuth SPIFFE Client Authentication](https://datatracker.ietf.org/doc/draft-ietf-oauth-spiffe-client-auth/) specification (hereafter referred to as `spiffe_wit`), applying the concepts of [OAuth 2.0 Attestation-Based Client Authentication](https://datatracker.ietf.org/doc/draft-ietf-oauth-attestation-based-client-auth/) (hereafter ABCA) is reasonable. However, having it encroach upon the ABCA specification raises the following issues.\n\n- According to the [WIMSE Workload Credentials](https://datatracker.ietf.org/doc/draft-ietf-wimse-workload-creds/) specification, the `sub` claim of a Workload Identity Token (hereafter WIT) must be an identifier of the workload. On the other hand, in ABCA, the `sub` claim of a Client Attestation must be an identifier of the OAuth client. Since a workload and an OAuth client are not necessarily in a one-to-one relationship, using a WIT as a Client Attestation leads to a conflict in the requirements for the `sub` claim.\n- In addition, there is an attempt to make ABCA implementations accept `wit+jwt` as a value of the `typ` of a Client Attestation JWT, in addition to `oauth-client-attestation+jwt`.\n\nThese issues can be avoided by modifying the specification as follows:\n\n1. Use the `Workload-Identity-Token` HTTP header instead of the `OAuth-Client-Attestation` HTTP header. This header is defined in the WIMSE Workload Credentials specification.\n2. Introduce and use a new `Workload-Identity-Token-PoP` HTTP header instead of the `OAuth-Client-Attestation-PoP` HTTP header. (This new header would likely be better defined in the WIMSE Workload Credentials specification rather than in the OAuth SPIFFE Client Authentication specification.)\n\nSince a WIT does not contain information identifying the OAuth client, when using the revised `spiffe_wit` client authentication, a separate `client_id` request parameter would be required. The server implementation would then, similar to the case of `spiffe_jwt` client authentication, verify that the value of the `spiffe_id` client metadata parameter of the OAuth client identified by the `client_id` request parameter matches the value of the `sub` claim in the WIT.",
       "createdAt": "2026-04-27T00:54:14Z",
-      "updatedAt": "2026-04-27T00:54:14Z",
+      "updatedAt": "2026-11-18T20:22:43Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "arndt-s",
+          "authorAssociation": "MEMBER",
+          "body": "Hi @TakahikoKawasaki,\n\nwe believe most of this is addressed now with revision -03. We kept the `OAuth-Client-Attestation` and `OAuth-Client-Attestation-PoP` HTTP header to keep changes at the AS low. The ABCA spec how allows for profiles to specify alternative types because of us and potentially others later down the line.\n\nDo you think this addresses your issue?",
+          "createdAt": "2026-11-18T20:22:43Z",
+          "updatedAt": "2026-11-18T20:22:43Z"
+        }
+      ]
     },
     {
       "number": 43,
@@ -728,15 +736,15 @@
       "id": "I_kwDOOml42M8AAAABWtukcg",
       "title": "Should X.509 validation include all the leaf checks from the SPIFFE X.509 specification?",
       "url": "https://github.com/oauth-wg/oauth-spiffe-client-authentication/issues/52",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "josephdecock",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Section 5.2 of [X.509-SVID](https://github.com/spiffe/spiffe/blob/main/standards/X509-SVID.md#52-leaf-validation) defines the requirements for validation of leaf SVIDs. Some of those requirements are present in section 3.2 of this draft, but not all. In particular, this draft doesn't mention that validators MUST check that `keyCertSign` and `cRLSign` are not set in the key usage extension, and that the SPIFFE ID has a non-root path component. Should the language here be updated to include those checks? If so, I'm happy to raise a PR.\n\nFor reference, here's what X.509-SVID says:\n\n> When validating an X.509 SVID for authentication purposes, the validator MUST ensure that the `cA` field in the basic constraints extension is set to `false`, and that `keyCertSign` and `cRLSign` are not set in the key usage extension. The validator MUST also ensure that the scheme of the SPIFFE ID is set to `spiffe`, and MUST ensure that the SPIFFE ID has a non-root path component. SVIDs containing more than one URI SAN MUST be rejected.\n\n",
       "createdAt": "2026-10-12T19:28:40Z",
-      "updatedAt": "2026-11-01T17:19:33Z",
-      "closedAt": null,
+      "updatedAt": "2026-11-18T20:18:54Z",
+      "closedAt": "2026-11-18T20:18:54Z",
       "comments": [
         {
           "author": "PieterKas",
@@ -751,6 +759,13 @@
           "body": "@josephdecock - please take a look at: https://github.com/oauth-wg/oauth-spiffe-client-authentication/pull/64",
           "createdAt": "2026-11-01T17:19:33Z",
           "updatedAt": "2026-11-01T17:19:33Z"
+        },
+        {
+          "author": "arndt-s",
+          "authorAssociation": "MEMBER",
+          "body": "Closing this as fixed by #64 ",
+          "createdAt": "2026-11-18T20:18:54Z",
+          "updatedAt": "2026-11-18T20:18:54Z"
         }
       ]
     },
